@@ -1,0 +1,146 @@
+{
+  "kind": "build_request",
+  "title": "Localize UI to Bahasa Indonesia, fix Catalog category selection, switch CSV delimiter to semicolon, add PWA install guide, and refresh theme",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-17",
+      "text": "Translate all user-facing UI text across the entire POS application from English to Bahasa Indonesia, including navigation labels, page titles, buttons, form labels/placeholders, empty states, toast messages, dialogs, and error messages. This includes admin modules (Catalog, Inventory, Receiving, Promotions, Payment Methods, Users, CSV Import/Export), POS/Checkout flow, Reports, Sync Status, Returns/Void/Refund flows, and receipt/print preview UI.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "yaps ubah semuanya ke bahasa indonesia.",
+          "betul bro"
+        ]
+      },
+      "acceptanceCriteria": [
+        "No hardcoded English UI strings remain in the app UI (excluding data values such as product names) after the change.",
+        "All toasts and validation messages shown to the user are in Bahasa Indonesia.",
+        "Receipt preview/print UI labels and any receipt annotations are in Bahasa Indonesia.",
+        "Navigation (sidebar/sheet) items are in Bahasa Indonesia and remain consistent across mobile/desktop layouts."
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "text": "Update all CSV export and import behavior to use Indonesian-friendly semicolon (;) delimiters instead of commas (,). This must apply to: (a) Reports CSV export, and (b) Product CSV export/import, including updating the on-screen CSV format examples/instructions.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "dan csv bentuknyajangan pakai \",\" tapi \";\" agar rapih pertabel ngikutin standar indonesia.",
+          "betul bro"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Reports CSV export downloads a .csv file where columns are separated by ';'.",
+        "Product CSV export downloads a .csv file where columns are separated by ';'.",
+        "Product CSV import correctly parses ';' delimited files and rejects malformed rows with clear (Indonesian) error messages.",
+        "The CSV format help text and example shown in the CSV Import/Export page uses ';' as the delimiter."
+      ]
+    },
+    {
+      "id": "REQ-19",
+      "text": "Fix the product creation/edit flow so that the Category dropdown is populated and selectable, and add an admin UI to create/manage product categories (at minimum: create new category with name + active flag). Ensure newly created categories are persisted in offline master data and are available immediately in the product form without requiring a reload.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Form Tambah Produk muncul, tapi field kategori tidak bisa dipilih (drop-down kosong",
+          "tidak bisa menambah kategori baru"
+        ]
+      },
+      "acceptanceCriteria": [
+        "In the Add Product / Edit Product dialog, the Category dropdown shows the current category list and selection works.",
+        "Admins can create a new category via the UI; after saving, the new category appears in the category dropdown in the product form immediately.",
+        "Category data is saved to the offline master data cache and queued for sync using the existing offline sync mechanism.",
+        "If there are zero categories, the UI shows a clear (Indonesian) call-to-action to create a category rather than an empty dropdown."
+      ]
+    },
+    {
+      "id": "REQ-20",
+      "text": "Audit admin-facing pages and actions to identify buttons/controls that are currently non-functional, then either (a) wire them to complete their intended flows using existing features (offline master data + sync queue patterns), or (b) disable them with a clear (Indonesian) explanation in the UI so the user is not blocked/confused. Prioritize fixing anything that blocks core admin workflows (e.g., catalog/product setup).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "dan juga ini admin ga bisa tambah produk masih ada beberap tombol yang masih belum bisa di pakai."
+        ]
+      },
+      "acceptanceCriteria": [
+        "All admin pages reachable from navigation have primary actions that either work end-to-end or are explicitly disabled with an Indonesian explanation.",
+        "No admin workflow is blocked by a clickable UI control that silently does nothing.",
+        "Any remaining not-yet-implemented flows are clearly marked in Indonesian (e.g., disabled state + short message) rather than showing misleading success/info toasts."
+      ]
+    },
+    {
+      "id": "REQ-21",
+      "text": "Add an in-app PWA installation guide and make it discoverable from the UI. The guide must explain how to install the POS as an app on Android (Chrome), iOS (Safari), and Desktop (Chrome/Edge), and include a short troubleshooting section (e.g., install option not showing). Use Bahasa Indonesia for all guide text.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "ouh oke cukup. tapi mungkin kasih gua tata cara installnya."
+        ]
+      },
+      "acceptanceCriteria": [
+        "There is an easily discoverable navigation entry or settings entry that opens an installation guide screen/dialog.",
+        "The guide includes separate, step-by-step instructions for Android, iOS, and Desktop.",
+        "Where supported, the UI integrates with the existing install prompt handling so users can trigger installation from the app.",
+        "All guide and troubleshooting text is in Bahasa Indonesia."
+      ]
+    },
+    {
+      "id": "REQ-22",
+      "text": "Refresh the visual styling to be more colorful while remaining consistent and readable across all POS modules, and maintaining light/dark mode support. Apply the updated theme consistently to navigation, cards, tables, dialogs, and primary/secondary actions.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "dan kalo bisa kayanya style designnya lebih berwarna hihihi"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The app uses a noticeably more colorful accent/secondary palette than before, applied consistently across major components.",
+        "Light and dark mode both remain usable with sufficient contrast for POS usage.",
+        "No module looks visually \"unstyled\" relative to others (consistent spacing, typography, and component variants)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor with all logic in backend/main.mo; only add backend/migration.mo if a state migration is truly required.",
+    "Do not modify frontend files in immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, and anything under frontend/src/components/ui (compose instead of editing).",
+    "Use English for any user-facing text in this build request document (the application UI itself should be translated to Bahasa Indonesia per requirements)."
+  ],
+  "nonGoals": [
+    "Building a native Android APK (deliver as installable PWA instead).",
+    "Adding third-party authentication methods beyond Internet Identity.",
+    "Introducing external databases or non-Motoko backend services."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

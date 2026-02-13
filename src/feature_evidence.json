@@ -1,0 +1,140 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-translate-all-user-facing-ui-text-across-the-entire-pos-application-from-english-to-bahasa-indonesia-including-navigation-labels-page-titles-buttons-form-labels-placeholders-empty-states-toast-messages-dialogs-and-error-messages-this-includes-admin-modules-catalog-inventory-receiving-promotions-payment-methods-users-csv-import-export-pos-checkout-flow-reports-sync-status-returns-void-refund-flows-and-receipt-print-preview-ui",
+      "featureTitle": "Translate all user-facing UI text across the entire POS application from English to Bahasa Indonesia, including navigation labels, page titles, buttons, form labels/placeholders, empty states, toast messages, dialogs, and error messages. This includes admin modules (Catalog, Inventory, Receiving, Promotions, Payment Methods, Users, CSV Import/Export), POS/Checkout flow, Reports, Sync Status, Returns/Void/Refund flows, and receipt/print preview UI.",
+      "files": [
+        "frontend/src/components/AppLayout.tsx",
+        "frontend/src/components/OfflineIndicator.tsx",
+        "frontend/src/features/auth/AuthGate.tsx",
+        "frontend/src/features/auth/IdleLock.tsx",
+        "frontend/src/features/auth/ProfileSetupDialog.tsx",
+        "frontend/src/features/catalog/CatalogPage.tsx",
+        "frontend/src/features/catalog/ProductCsvPage.tsx",
+        "frontend/src/i18n/strings.id.ts",
+        "frontend/src/i18n/t.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-17"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-all-csv-export-and-import-behavior-to-use-indonesian-friendly-semicolon-delimiters-instead-of-commas-this-must-apply-to-a-reports-csv-export-and-b-product-csv-export-import-including-updating-the-on-screen-csv-format-examples-instructions",
+      "featureTitle": "Update all CSV export and import behavior to use Indonesian-friendly semicolon (;) delimiters instead of commas (,). This must apply to: (a) Reports CSV export, and (b) Product CSV export/import, including updating the on-screen CSV format examples/instructions.",
+      "files": [
+        "frontend/src/features/catalog/ProductCsvPage.tsx",
+        "frontend/src/utils/csvExport.ts",
+        "frontend/src/utils/csvParse.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-18"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-the-product-creation-edit-flow-so-that-the-category-dropdown-is-populated-and-selectable-and-add-an-admin-ui-to-create-manage-product-categories-at-minimum-create-new-category-with-name-active-flag-ensure-newly-created-categories-are-persisted-in-offline-master-data-and-are-available-immediately-in-the-product-form-without-requiring-a-reload",
+      "featureTitle": "Fix the product creation/edit flow so that the Category dropdown is populated and selectable, and add an admin UI to create/manage product categories (at minimum: create new category with name + active flag). Ensure newly created categories are persisted in offline master data and are available immediately in the product form without requiring a reload.",
+      "files": [
+        "frontend/src/features/catalog/CatalogPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-19"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-audit-admin-facing-pages-and-actions-to-identify-buttons-controls-that-are-currently-non-functional-then-either-a-wire-them-to-complete-their-intended-flows-using-existing-features-offline-master-data-sync-queue-patterns-or-b-disable-them-with-a-clear-indonesian-explanation-in-the-ui-so-the-user-is-not-blocked-confused-prioritize-fixing-anything-that-blocks-core-admin-workflows-e-g-catalog-product-setup",
+      "featureTitle": "Audit admin-facing pages and actions to identify buttons/controls that are currently non-functional, then either (a) wire them to complete their intended flows using existing features (offline master data + sync queue patterns), or (b) disable them with a clear (Indonesian) explanation in the UI so the user is not blocked/confused. Prioritize fixing anything that blocks core admin workflows (e.g., catalog/product setup).",
+      "files": [
+        "frontend/src/features/catalog/CatalogPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-20"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-in-app-pwa-installation-guide-and-make-it-discoverable-from-the-ui-the-guide-must-explain-how-to-install-the-pos-as-an-app-on-android-chrome-ios-safari-and-desktop-chrome-edge-and-include-a-short-troubleshooting-section-e-g-install-option-not-showing-use-bahasa-indonesia-for-all-guide-text",
+      "featureTitle": "Add an in-app PWA installation guide and make it discoverable from the UI. The guide must explain how to install the POS as an app on Android (Chrome), iOS (Safari), and Desktop (Chrome/Edge), and include a short troubleshooting section (e.g., install option not showing). Use Bahasa Indonesia for all guide text.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/AppLayout.tsx",
+        "frontend/src/features/pwa/PwaInstallGuidePage.tsx",
+        "frontend/src/pwa/useInstallPrompt.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-21"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-refresh-the-visual-styling-to-be-more-colorful-while-remaining-consistent-and-readable-across-all-pos-modules-and-maintaining-light-dark-mode-support-apply-the-updated-theme-consistently-to-navigation-cards-tables-dialogs-and-primary-secondary-actions",
+      "featureTitle": "Refresh the visual styling to be more colorful while remaining consistent and readable across all POS modules, and maintaining light/dark mode support. Apply the updated theme consistently to navigation, cards, tables, dialogs, and primary/secondary actions.",
+      "files": [
+        "frontend/public/manifest.webmanifest",
+        "frontend/src/components/AppLayout.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-22"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

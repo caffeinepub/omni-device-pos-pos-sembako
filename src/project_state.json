@@ -1,0 +1,280 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 5,
+  "summary": "Build a modern installable PWA POS (single-outlet, offline-lite) for Indonesian UMKM retail/F&B using Caffeine stack: backend Motoko + frontend React/TypeScript. Scope confirmed as full-feature implementation (POS core, products, stock/purchasing, refunds/void, promotions, reports, printing, barcode scanning, roles/auth, offline queue + sync).",
+  "architectural_notes": [
+    "Tech stack confirmed: backend Motoko + frontend React/TypeScript (no Laravel/PHP/MySQL/Vue).",
+    "Distribution confirmed: installable PWA (not native APK).",
+    "Core constraints: single-outlet + offline-lite with queued sync, retry/exponential backoff, and last-write-wins conflict resolution.",
+    "CSV format decision: use semicolon (;) as delimiter for Indonesian-standard CSV exports and imports."
+  ],
+  "known_issues": [
+    "Initial automated build attempt failed ('Our AI couldn't handle that request'); may require smaller/clearer build steps.",
+    "Product form: category dropdown is empty/unselectable; user also cannot add new categories, blocking adding products.",
+    "Some admin UI actions/buttons are non-functional (needs triage of which buttons/flows are disabled or not wired).",
+    "Build/run pipeline instability: repeated internal LLM/Unexpected AI errors when attempting rebuild."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-create-the-core-pos-sales-flow-ui-for-a-single-outlet-retail-f-b-pos-product-browse-search-add-to-cart-edit-quantity-and-per-item-notes-per-item-discount-and-per-transaction-discount-simple-tax-toggle-hold-resume-carts-and-finalize-sale",
+      "title": "Create the core POS sales flow UI for a single-outlet retail/F&B POS: product browse/search, add-to-cart, edit quantity and per-item notes, per-item discount and per-transaction discount, simple tax toggle, hold/resume carts, and finalize sale.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-payments-handling-in-checkout-split-payments-across-multiple-tenders-support-configurable-custom-payment-methods-e-g-cash-qris-transfer-and-record-payment-breakdown-per-transaction",
+      "title": "Implement payments handling in checkout: split payments across multiple tenders, support configurable custom payment methods (e.g., Cash, QRIS, Transfer), and record payment breakdown per transaction.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-product-catalog-management-categories-active-inactive-products-variants-sku-barcode-ean-code128-string-multi-unit-e-g-pcs-pack-box-with-unit-conversions-and-retail-wholesale-price-tiers",
+      "title": "Build product catalog management: categories, active/inactive products, variants/SKU, barcode (EAN/Code128 string), multi-unit (e.g., pcs/pack/box) with unit conversions, and retail/wholesale price tiers.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-inventory-features-on-hand-stock-per-sku-low-stock-threshold-stock-adjustments-increase-decrease-with-reason-and-purchasing-receiving-from-suppliers-that-increases-stock-and-records-cost",
+      "title": "Implement inventory features: on-hand stock per SKU, low-stock threshold, stock adjustments (increase/decrease with reason), and purchasing/receiving from suppliers that increases stock and records cost.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-users-and-access-control-support-at-least-admin-and-cashier-roles-login-via-pin-password-session-timeout-auto-lock-and-require-admin-authorization-re-auth-for-sensitive-actions-void-refund-override",
+      "title": "Add users and access control: support at least Admin and Cashier roles, login via PIN/password, session timeout/auto-lock, and require Admin authorization (re-auth) for sensitive actions (void/refund/override).",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-offline-lite-behavior-local-cached-master-data-products-categories-payment-methods-offline-transaction-creation-a-durable-sync-queue-automatic-retries-with-exponential-backoff-a-visible-sync-status-screen-and-a-last-write-wins-conflict-policy-for-master-data-updates",
+      "title": "Implement offline-lite behavior: local cached master data (products, categories, payment methods), offline transaction creation, a durable sync queue, automatic retries with exponential backoff, a visible sync status screen, and a last-write-wins conflict policy for master-data updates.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-barcode-scanning-support-1-camera-based-scanning-on-mobile-tablet-and-2-hid-keyboard-wedge-scanners-on-desktop-tablet-scanning-adds-the-matching-sku-to-cart-or-increments-quantity-if-already-in-cart",
+      "title": "Add barcode scanning support: (1) camera-based scanning on mobile/tablet, and (2) HID keyboard wedge scanners on desktop/tablet; scanning adds the matching SKU to cart or increments quantity if already in cart.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-and-print-receipts-provide-58mm-and-80mm-receipt-templates-print-via-browser-print-dialog-and-provide-a-pdf-or-printable-export-where-supported-include-store-info-line-items-discounts-tax-totals-and-payment-breakdown",
+      "title": "Generate and print receipts: provide 58mm and 80mm receipt templates, print via browser print dialog, and provide a PDF (or printable export) where supported; include store info, line items, discounts, tax, totals, and payment breakdown.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-refunds-returns-and-voids-support-returning-items-partial-or-full-linked-to-an-original-transaction-when-possible-and-allow-voiding-a-transaction-with-admin-authorization-ensure-inventory-and-reporting-reflect-these-events",
+      "title": "Implement refunds/returns and voids: support returning items (partial or full) linked to an original transaction when possible, and allow voiding a transaction with Admin authorization; ensure inventory and reporting reflect these events.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-promotions-and-coupons-support-simple-percentage-fixed-discounts-that-can-apply-to-items-or-entire-cart-optional-coupon-codes-and-basic-eligibility-rules-active-dates-minimum-spend",
+      "title": "Add promotions and coupons: support simple percentage/fixed discounts that can apply to items or entire cart, optional coupon codes, and basic eligibility rules (active dates, minimum spend).",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-reporting-and-exports-daily-summary-sales-refunds-net-payment-method-breakdown-per-product-sales-basic-margin-using-stored-costs-and-csv-export-for-key-reports",
+      "title": "Build reporting and exports: daily summary (sales, refunds, net, payment method breakdown), per-product sales, basic margin using stored costs, and CSV export for key reports.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-provide-data-import-export-for-products-via-csv-export-current-products-and-import-products-with-validation-and-an-error-report-include-barcode-sku-category-prices-units-and-active-flag",
+      "title": "Provide data import/export for products via CSV: export current products and import products with validation and an error report; include barcode, SKU, category, prices, units, and active flag.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-app-a-modern-installable-pwa-offline-capable-shell-install-prompt-ux-where-supported-app-manifest-proper-icons-and-responsive-layouts-optimized-for-phone-tablet-desktop-pos-usage",
+      "title": "Make the app a modern installable PWA: offline-capable shell, install prompt UX where supported, app manifest, proper icons, and responsive layouts optimized for phone/tablet/desktop POS usage.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-indonesian-locale-defaults-across-the-ui-currency-in-idr-date-time-in-asia-jakarta-and-indonesian-friendly-number-formatting-keep-all-user-facing-ui-text-in-english-as-requested-for-this-build-request",
+      "title": "Apply Indonesian locale defaults across the UI: currency in IDR, date/time in Asia/Jakarta, and Indonesian-friendly number formatting; keep all user-facing UI text in English as requested for this build request.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-coherent-visual-theme-and-design-system-usage-tailwind-shadcn-components-choose-a-distinct-non-blue-non-purple-theme-define-typography-and-spacing-support-light-and-dark-mode-and-apply-consistently-across-all-pos-modules",
+      "title": "Create a coherent visual theme and design system usage (Tailwind + shadcn components): choose a distinct non-blue/non-purple theme, define typography and spacing, support light and dark mode, and apply consistently across all POS modules.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-optional-sample-data-loader-for-demo-testing-a-one-click-action-admin-only-that-seeds-a-small-set-of-categories-products-with-barcodes-and-payment-methods-into-local-backend-storage",
+      "title": "Add an optional sample data loader for demo/testing: a one-click action (Admin-only) that seeds a small set of categories, products (with barcodes), and payment methods into local/backend storage.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-translate-all-user-facing-ui-text-across-the-entire-pos-application-from-english-to-bahasa-indonesia-including-navigation-labels-page-titles-buttons-form-labels-placeholders-empty-states-toast-messages-dialogs-and-error-messages-this-includes-admin-modules-catalog-inventory-receiving-promotions-payment-methods-users-csv-import-export-pos-checkout-flow-reports-sync-status-returns-void-refund-flows-and-receipt-print-preview-ui",
+      "title": "Translate all user-facing UI text across the entire POS application from English to Bahasa Indonesia, including navigation labels, page titles, buttons, form labels/placeholders, empty states, toast messages, dialogs, and error messages. This includes admin modules (Catalog, Inventory, Receiving, Promotions, Payment Methods, Users, CSV Import/Export), POS/Checkout flow, Reports, Sync Status, Returns/Void/Refund flows, and receipt/print preview UI.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-all-csv-export-and-import-behavior-to-use-indonesian-friendly-semicolon-delimiters-instead-of-commas-this-must-apply-to-a-reports-csv-export-and-b-product-csv-export-import-including-updating-the-on-screen-csv-format-examples-instructions",
+      "title": "Update all CSV export and import behavior to use Indonesian-friendly semicolon (;) delimiters instead of commas (,). This must apply to: (a) Reports CSV export, and (b) Product CSV export/import, including updating the on-screen CSV format examples/instructions.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-product-creation-edit-flow-so-that-the-category-dropdown-is-populated-and-selectable-and-add-an-admin-ui-to-create-manage-product-categories-at-minimum-create-new-category-with-name-active-flag-ensure-newly-created-categories-are-persisted-in-offline-master-data-and-are-available-immediately-in-the-product-form-without-requiring-a-reload",
+      "title": "Fix the product creation/edit flow so that the Category dropdown is populated and selectable, and add an admin UI to create/manage product categories (at minimum: create new category with name + active flag). Ensure newly created categories are persisted in offline master data and are available immediately in the product form without requiring a reload.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-audit-admin-facing-pages-and-actions-to-identify-buttons-controls-that-are-currently-non-functional-then-either-a-wire-them-to-complete-their-intended-flows-using-existing-features-offline-master-data-sync-queue-patterns-or-b-disable-them-with-a-clear-indonesian-explanation-in-the-ui-so-the-user-is-not-blocked-confused-prioritize-fixing-anything-that-blocks-core-admin-workflows-e-g-catalog-product-setup",
+      "title": "Audit admin-facing pages and actions to identify buttons/controls that are currently non-functional, then either (a) wire them to complete their intended flows using existing features (offline master data + sync queue patterns), or (b) disable them with a clear (Indonesian) explanation in the UI so the user is not blocked/confused. Prioritize fixing anything that blocks core admin workflows (e.g., catalog/product setup).",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-in-app-pwa-installation-guide-and-make-it-discoverable-from-the-ui-the-guide-must-explain-how-to-install-the-pos-as-an-app-on-android-chrome-ios-safari-and-desktop-chrome-edge-and-include-a-short-troubleshooting-section-e-g-install-option-not-showing-use-bahasa-indonesia-for-all-guide-text",
+      "title": "Add an in-app PWA installation guide and make it discoverable from the UI. The guide must explain how to install the POS as an app on Android (Chrome), iOS (Safari), and Desktop (Chrome/Edge), and include a short troubleshooting section (e.g., install option not showing). Use Bahasa Indonesia for all guide text.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-refresh-the-visual-styling-to-be-more-colorful-while-remaining-consistent-and-readable-across-all-pos-modules-and-maintaining-light-dark-mode-support-apply-the-updated-theme-consistently-to-navigation-cards-tables-dialogs-and-primary-secondary-actions",
+      "title": "Refresh the visual styling to be more colorful while remaining consistent and readable across all POS modules, and maintaining light/dark mode support. Apply the updated theme consistently to navigation, cards, tables, dialogs, and primary/secondary actions.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Installable modern PWA POS (responsive HP/tablet/desktop) with Indonesian locale (IDR, Asia/Jakarta)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "POS sales flow: cart, qty/notes, item & transaction discounts, simple tax, hold/resume, split payments + custom methods",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Product catalog + inventory: categories, variants/SKU, barcode (EAN/Code128), active flag, stock qty, low-stock, retail/wholesale tiers, multi-unit (pcs/pack/dus)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Offline-lite data layer: local cache + offline transactions + sync queue with retry/exponential backoff and last-write-wins conflict policy",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Barcode scanning support (camera + HID keyboard scanners)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Receipt printing 58mm/80mm via browser print (HTML template) + save/share PDF where supported",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Users & access control: Admin/Kasir roles, login (PIN/password), auto session lock",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Reports: daily summary, per-product sales, CSV export",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Extended modules requested: simple stock adjustments & purchasing, suppliers/cost/margin, refunds/returns, void with admin authorization, promotions/coupons, product CSV import/export, dark/light theme, optional sample data loader",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Localize entire UI to Bahasa Indonesia across all POS modules (menus, buttons, forms, errors, reports, receipts)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Use Indonesian-friendly CSV formatting: semicolon (;) delimiter for all CSV exports and product CSV import parsing",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Provide end-user PWA installation guide/instructions (Android/desktop/iOS where applicable) for installing the POS like an app",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Update visual styling to be more colorful (refresh theme/design system while staying consistent across modules)",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Omni-Device POS (POS Sembako)",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
