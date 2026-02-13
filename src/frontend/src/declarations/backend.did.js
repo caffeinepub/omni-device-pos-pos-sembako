@@ -33,6 +33,24 @@ export const PaymentBreakdown = IDL.Record({
   'methodId' : IDL.Nat,
   'amount' : IDL.Int,
 });
+export const ProductUnit = IDL.Record({
+  'id' : IDL.Nat,
+  'name' : IDL.Text,
+  'conversionToBase' : IDL.Float64,
+});
+export const CreateTransactionInput = IDL.Record({
+  'payments' : IDL.Vec(PaymentBreakdown),
+  'totalAmount' : IDL.Int,
+  'items' : IDL.Vec(
+    IDL.Record({
+      'unit' : ProductUnit,
+      'productId' : IDL.Nat,
+      'variantId' : IDL.Nat,
+      'quantity' : IDL.Int,
+      'price' : IDL.Int,
+    })
+  ),
+});
 export const TransactionStatus = IDL.Variant({
   'fullyRefunded' : IDL.Null,
   'partiallyRefunded' : IDL.Record({
@@ -41,11 +59,6 @@ export const TransactionStatus = IDL.Variant({
   }),
   'completed' : IDL.Null,
   'voided' : IDL.Record({ 'voidedBy' : IDL.Principal, 'timestamp' : IDL.Int }),
-});
-export const ProductUnit = IDL.Record({
-  'id' : IDL.Nat,
-  'name' : IDL.Text,
-  'conversionToBase' : IDL.Float64,
 });
 export const Transaction = IDL.Record({
   'id' : IDL.Nat,
@@ -149,6 +162,7 @@ export const idlService = IDL.Service({
   'addProductVariant' : IDL.Func([SaveProductVariantInput], [IDL.Nat], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'createInventoryAdjustment' : IDL.Func([StockAdjustment], [], []),
+  'createTransaction' : IDL.Func([CreateTransactionInput], [IDL.Nat], []),
   'getAllPayments' : IDL.Func([], [IDL.Vec(PaymentBreakdown)], ['query']),
   'getAllTransactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
@@ -215,6 +229,24 @@ export const idlFactory = ({ IDL }) => {
     'methodId' : IDL.Nat,
     'amount' : IDL.Int,
   });
+  const ProductUnit = IDL.Record({
+    'id' : IDL.Nat,
+    'name' : IDL.Text,
+    'conversionToBase' : IDL.Float64,
+  });
+  const CreateTransactionInput = IDL.Record({
+    'payments' : IDL.Vec(PaymentBreakdown),
+    'totalAmount' : IDL.Int,
+    'items' : IDL.Vec(
+      IDL.Record({
+        'unit' : ProductUnit,
+        'productId' : IDL.Nat,
+        'variantId' : IDL.Nat,
+        'quantity' : IDL.Int,
+        'price' : IDL.Int,
+      })
+    ),
+  });
   const TransactionStatus = IDL.Variant({
     'fullyRefunded' : IDL.Null,
     'partiallyRefunded' : IDL.Record({
@@ -226,11 +258,6 @@ export const idlFactory = ({ IDL }) => {
       'voidedBy' : IDL.Principal,
       'timestamp' : IDL.Int,
     }),
-  });
-  const ProductUnit = IDL.Record({
-    'id' : IDL.Nat,
-    'name' : IDL.Text,
-    'conversionToBase' : IDL.Float64,
   });
   const Transaction = IDL.Record({
     'id' : IDL.Nat,
@@ -334,6 +361,7 @@ export const idlFactory = ({ IDL }) => {
     'addProductVariant' : IDL.Func([SaveProductVariantInput], [IDL.Nat], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'createInventoryAdjustment' : IDL.Func([StockAdjustment], [], []),
+    'createTransaction' : IDL.Func([CreateTransactionInput], [IDL.Nat], []),
     'getAllPayments' : IDL.Func([], [IDL.Vec(PaymentBreakdown)], ['query']),
     'getAllTransactions' : IDL.Func([], [IDL.Vec(Transaction)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),

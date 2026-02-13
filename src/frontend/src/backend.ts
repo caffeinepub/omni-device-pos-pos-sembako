@@ -125,6 +125,17 @@ export interface Promotion {
     };
     promoId: bigint;
 }
+export interface CreateTransactionInput {
+    payments: Array<PaymentBreakdown>;
+    totalAmount: bigint;
+    items: Array<{
+        unit: ProductUnit;
+        productId: bigint;
+        variantId: bigint;
+        quantity: bigint;
+        price: bigint;
+    }>;
+}
 export interface PaymentMethod {
     id: bigint;
     methodType: PaymentMethodType;
@@ -261,6 +272,7 @@ export interface backendInterface {
     addProductVariant(variant: SaveProductVariantInput): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createInventoryAdjustment(adjustment: StockAdjustment): Promise<void>;
+    createTransaction(input: CreateTransactionInput): Promise<bigint>;
     getAllPayments(): Promise<Array<PaymentBreakdown>>;
     getAllTransactions(): Promise<Array<Transaction>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
@@ -334,6 +346,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.createInventoryAdjustment(arg0);
+            return result;
+        }
+    }
+    async createTransaction(arg0: CreateTransactionInput): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createTransaction(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createTransaction(arg0);
             return result;
         }
     }

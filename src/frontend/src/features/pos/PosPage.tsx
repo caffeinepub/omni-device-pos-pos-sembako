@@ -4,58 +4,44 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, ShoppingCart, Camera, Minus, Plus, Trash2, Tag } from 'lucide-react';
-import { useCartStore } from './cartStore';
-import { useProducts } from './productSelectors';
-import { formatCurrency } from '../../i18n/format';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Search, ShoppingCart, Trash2, Camera, Minus, Plus } from 'lucide-react';
+import { useMasterData } from '../../offline/masterDataCache';
+import { useCartStore } from './cartStore';
+import { formatCurrency } from '../../i18n/format';
 import { CameraBarcodeScanner } from '../barcode/CameraBarcodeScanner';
-import { useHidBarcodeListener } from '../barcode/HidBarcodeListener';
+import { resolveBarcode } from '../barcode/barcodeResolver';
 import { toast } from 'sonner';
+import { t } from '../../i18n/t';
 
 export function PosPage() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [showScanner, setShowScanner] = useState(false);
-  const { products, searchProducts } = useProducts();
-  const { cart, addItem, updateQuantity, removeItem, clearCart, cartTotal, cartSubtotal, cartDiscount, setCartDiscount, cartTax, setTaxEnabled, taxEnabled } = useCartStore();
+  const { data: products } = useMasterData('products');
+  const { cart, addItem, updateQuantity, removeItem, cartTotal, cartSubtotal, cartDiscount, cartTax, setCartDiscount, taxEnabled, setTaxEnabled } = useCartStore();
 
-  const filteredProducts = searchQuery ? searchProducts(searchQuery) : products.slice(0, 20);
+  const filteredProducts = (products || []).filter((p: any) =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.variants.some((v: any) => v.sku.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
 
-  useHidBarcodeListener((barcode) => {
-    const product = products.find(p => 
-      p.variants.some(v => v.barcode === barcode)
-    );
-    if (product) {
-      const variant = product.variants.find(v => v.barcode === barcode);
-      if (variant) {
-        addItem(product, variant);
-        toast.success(`Added ${product.name} to cart`);
-      }
-    } else {
-      toast.error(`Product not found for barcode: ${barcode}`);
-    }
-  });
+  const handleAddToCart = (product: any, variant: any) => {
+    addItem(product, variant);
+    toast.success(`${product.name} ${t('pos.addedToCart')}`);
+  };
 
   const handleBarcodeScanned = (barcode: string) => {
-    const product = products.find(p => 
-      p.variants.some(v => v.barcode === barcode)
-    );
-    if (product) {
-      const variant = product.variants.find(v => v.barcode === barcode);
-      if (variant) {
-        addItem(product, variant);
-        toast.success(`Added ${product.name} to cart`);
-        setShowScanner(false);
-      }
+    const result = resolveBarcode(barcode, products || []);
+    if (result) {
+      handleAddToCart(result.product, result.variant);
     } else {
-      toast.error(`Product not found for barcode: ${barcode}`);
+      toast.error(`${t('pos.productNotFound')}: ${barcode}`);
     }
   };
 
   const handleCheckout = () => {
     if (cart.length === 0) {
-      toast.error('Cart is empty');
+      toast.error(t('pos.cartEmptyError'));
       return;
     }
     navigate({ to: '/checkout' });
@@ -63,154 +49,169 @@ export function PosPage() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 space-y-4">
-        <Card>
+      <div className="lg:col-span-2 space-y-6">
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle>Product Search</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Search className="h-5 w-5" />
+              {t('pos.productSearch')}
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name, SKU, or barcode..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Sheet open={showScanner} onOpenChange={setShowScanner}>
+              <Input
+                placeholder={t('pos.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="glass-input rounded-xl"
+              />
+              <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="outline" size="icon">
-                    <Camera className="h-4 w-4" />
+                  <Button variant="outline" size="icon" className="glass-button rounded-xl">
+                    <Camera className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="h-[80vh]">
+                <SheetContent className="glass-elevated">
                   <SheetHeader>
-                    <SheetTitle>Scan Barcode</SheetTitle>
+                    <SheetTitle>{t('pos.scanBarcode')}</SheetTitle>
                   </SheetHeader>
-                  <div className="mt-4">
+                  <div className="mt-6">
                     <CameraBarcodeScanner onScan={handleBarcodeScanned} />
                   </div>
                 </SheetContent>
               </Sheet>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[600px] overflow-y-auto">
+              {filteredProducts.map((product: any) =>
+                product.variants.map((variant: any) => (
+                  <div
+                    key={`${product.id}-${variant.id}`}
+                    className="glass-card p-4 cursor-pointer hover:shadow-glass-lg transition-all duration-200"
+                    onClick={() => handleAddToCart(product, variant)}
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h3 className="font-semibold">{product.name}</h3>
+                        <p className="text-sm text-muted-foreground">{variant.sku}</p>
+                      </div>
+                      <Badge variant={product.active ? 'default' : 'secondary'} className="glass-button">
+                        {product.active ? t('common.active') : t('common.inactive')}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-primary">{formatCurrency(variant.retailPrice)}</span>
+                      {variant.wholesalePrice && (
+                        <span className="text-sm text-muted-foreground">
+                          {t('pos.wholesale')}: {formatCurrency(variant.wholesalePrice)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {filteredProducts.map((product) => (
-            <Card key={product.id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => {
-              if (product.variants.length > 0) {
-                addItem(product, product.variants[0]);
-                toast.success(`Added ${product.name} to cart`);
-              }
-            }}>
-              <CardContent className="p-4">
-                <h3 className="font-semibold mb-2">{product.name}</h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">{product.variants[0]?.sku}</span>
-                  <Badge variant={product.active ? 'default' : 'secondary'}>
-                    {product.active ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
-                <div className="mt-2">
-                  <span className="text-lg font-bold">{formatCurrency(product.variants[0]?.retailPrice || 0)}</span>
-                  {product.variants[0]?.wholesalePrice && (
-                    <span className="text-sm text-muted-foreground ml-2">
-                      Wholesale: {formatCurrency(product.variants[0].wholesalePrice)}
-                    </span>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
 
-      <div className="space-y-4">
-        <Card>
+      <div className="space-y-6">
+        <Card className="glass-elevated sticky top-20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShoppingCart className="h-5 w-5" />
-              Cart ({cart.length})
+              {t('pos.cart')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {cart.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">Cart is empty</p>
+              <p className="text-center text-muted-foreground py-8">{t('pos.cartEmpty')}</p>
             ) : (
               <>
-                <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                <div className="space-y-2 max-h-[300px] overflow-y-auto">
                   {cart.map((item) => (
-                    <div key={item.id} className="flex items-center gap-2 p-2 border rounded-lg">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{item.name}</p>
-                        <p className="text-xs text-muted-foreground">{formatCurrency(item.price)}</p>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="w-8 text-center text-sm">{item.quantity}</span>
-                        <Button size="icon" variant="outline" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                        <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => removeItem(item.id)}>
+                    <div key={item.id} className="glass-card p-3 space-y-2">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <p className="font-medium text-sm">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">{item.sku}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeItem(item.id)}
+                          className="h-6 w-6 glass-button rounded-lg"
+                        >
                           <Trash2 className="h-3 w-3" />
                         </Button>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="h-7 w-7 glass-button rounded-lg"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="w-8 text-center font-medium">{item.quantity}</span>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            className="h-7 w-7 glass-button rounded-lg"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <span className="font-semibold">{formatCurrency(item.price * item.quantity)}</span>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <div className="space-y-2 pt-4 border-t">
+                <div className="space-y-2 pt-4 border-t border-border/30">
+                  <div className="flex justify-between text-sm">
+                    <span>{t('pos.subtotal')}</span>
+                    <span className="font-medium">{formatCurrency(cartSubtotal)}</span>
+                  </div>
                   <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
                     <Input
                       type="number"
-                      placeholder="Discount (IDR)"
+                      placeholder={t('pos.discountPlaceholder')}
                       value={cartDiscount || ''}
                       onChange={(e) => setCartDiscount(Number(e.target.value) || 0)}
-                      className="flex-1"
+                      className="glass-input rounded-xl"
                     />
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Subtotal:</span>
-                    <span>{formatCurrency(cartSubtotal)}</span>
-                  </div>
                   {cartDiscount > 0 && (
-                    <div className="flex items-center justify-between text-sm text-destructive">
-                      <span>Discount:</span>
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>{t('pos.discount')}</span>
                       <span>-{formatCurrency(cartDiscount)}</span>
                     </div>
                   )}
-                  <div className="flex items-center justify-between text-sm">
-                    <label className="flex items-center gap-2 cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm cursor-pointer flex items-center gap-2">
                       <input
                         type="checkbox"
                         checked={taxEnabled}
                         onChange={(e) => setTaxEnabled(e.target.checked)}
                         className="rounded"
                       />
-                      <span>Tax (10%):</span>
+                      {t('pos.tax')}
                     </label>
-                    <span>{formatCurrency(cartTax)}</span>
+                    {taxEnabled && <span className="text-sm font-medium">{formatCurrency(cartTax)}</span>}
                   </div>
-                  <div className="flex items-center justify-between text-lg font-bold pt-2 border-t">
-                    <span>Total:</span>
-                    <span>{formatCurrency(cartTotal)}</span>
+                  <div className="flex justify-between text-lg font-bold pt-2 border-t border-border/30">
+                    <span>{t('pos.total')}</span>
+                    <span className="text-primary">{formatCurrency(cartTotal)}</span>
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={clearCart} className="flex-1">
-                    Clear
-                  </Button>
-                  <Button onClick={handleCheckout} className="flex-1">
-                    Checkout
-                  </Button>
-                </div>
+                <Button onClick={handleCheckout} className="w-full glass-button rounded-xl" size="lg">
+                  {t('pos.checkout')}
+                </Button>
               </>
             )}
           </CardContent>

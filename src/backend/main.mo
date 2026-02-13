@@ -9,9 +9,7 @@ import Runtime "mo:core/Runtime";
 import Principal "mo:core/Principal";
 import AccessControl "authorization/access-control";
 import MixinAuthorization "authorization/MixinAuthorization";
-import Migration "migration";
 
-(with migration = Migration.run)
 actor {
   module StockKey {
     public func compare(lhs : (Nat, Nat), rhs : (Nat, Nat)) : Order.Order {
@@ -179,6 +177,12 @@ actor {
     wholesalePrice : ?Int;
     cost : Int;
     active : Bool;
+  };
+
+  type CreateTransactionInput = {
+    items : [{ productId : Nat; variantId : Nat; quantity : Int; unit : ProductUnit; price : Int }];
+    payments : [PaymentBreakdown];
+    totalAmount : Int;
   };
 
   func genId() : Nat {
@@ -436,6 +440,55 @@ actor {
       Runtime.trap("Unauthorized: Only authenticated users can access category list");
     };
     categories.values().toArray().filter(func(c) { c.active });
+  };
+
+  // Update transactions for completed sales as atomic operation (stock must be decremented)
+  public shared ({ caller }) func createTransaction(input : CreateTransactionInput) : async Nat {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can create transactions");
+    };
+
+    // Check stock using array iteration (force sequentialization vs. core iter logic)
+    let hasInsufficientStock = input.items.any(
+      func(item) {
+        let key = (item.productId, item.variantId);
+        let currentStock = switch (stock.get(key)) {
+          case (null) { 0 };
+          case (?quantity) { quantity };
+        };
+        currentStock < item.quantity;
+      }
+    );
+
+    if (hasInsufficientStock) {
+      Runtime.trap("Insufficient stock quantity for one or more items");
+    };
+
+    let newTransaction : Transaction = {
+      id = genId();
+      items = input.items;
+      payments = input.payments;
+      totalAmount = input.totalAmount;
+      createdBy = caller;
+      timestamp = Time.now();
+      refundedAmount = 0;
+      status = #completed;
+    };
+
+    // Decrement stock atomically
+    for (item in input.items.vals()) {
+      let key = (item.productId, item.variantId);
+      let currentStock = switch (stock.get(key)) {
+        case (null) { 0 };
+        case (?quantity) { quantity };
+      };
+      let newStock = currentStock - item.quantity;
+      stock.add(key, newStock);
+    };
+
+    transactions.add(newTransaction.id, newTransaction);
+
+    newTransaction.id;
   };
 
   func genSkuVariant(productId : Nat, _variant : Text) : Text {

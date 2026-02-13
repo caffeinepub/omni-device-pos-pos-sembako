@@ -11,6 +11,7 @@ import { calculateDailySummary, calculateProductSales } from './reportCalculatio
 import { exportReportCsv } from '../../utils/csvExport';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
+import { t } from '../../i18n/t';
 
 export function ReportsPage() {
   const [startDate, setStartDate] = useState(formatDate(Date.now() - 7 * 24 * 60 * 60 * 1000).split(' ')[0]);
@@ -37,9 +38,9 @@ export function ReportsPage() {
   const handleExport = () => {
     try {
       exportReportCsv(productSales, `sales-report-${startDate}-to-${endDate}`);
-      toast.success('Report exported successfully');
+      toast.success(t('reports.exportSuccess'));
     } catch (error) {
-      toast.error(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`${t('reports.exportFailed')}: ${error instanceof Error ? error.message : t('common.error')}`);
     }
   };
 
@@ -47,37 +48,39 @@ export function ReportsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Reports</h1>
-          <p className="text-muted-foreground mt-2">Sales analytics and insights</p>
+          <h1 className="text-3xl font-bold">{t('reports.title')}</h1>
+          <p className="text-muted-foreground mt-2">{t('reports.description')}</p>
         </div>
-        <Button onClick={handleExport}>
+        <Button onClick={handleExport} className="glass-button rounded-xl">
           <Download className="mr-2 h-4 w-4" />
-          Export CSV
+          {t('reports.exportCsv')}
         </Button>
       </div>
 
-      <Card>
+      <Card className="glass-card">
         <CardHeader>
-          <CardTitle>Date Range</CardTitle>
+          <CardTitle>{t('reports.dateRange')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
+              <Label htmlFor="startDate">{t('reports.startDate')}</Label>
               <Input
                 id="startDate"
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
+                className="glass-input rounded-xl"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endDate">End Date</Label>
+              <Label htmlFor="endDate">{t('reports.endDate')}</Label>
               <Input
                 id="endDate"
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
+                className="glass-input rounded-xl"
               />
             </div>
           </div>
@@ -85,61 +88,61 @@ export function ReportsPage() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
+        <Card className="glass-elevated">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('reports.totalRevenue')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(dailySummary.totalRevenue)}</div>
             <p className="text-xs text-muted-foreground">
-              {dailySummary.transactionCount} transactions
+              {dailySummary.transactionCount} {t('reports.transactions')}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-elevated">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Transaction</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('reports.averageTransaction')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(dailySummary.averageTransaction)}</div>
             <p className="text-xs text-muted-foreground">
-              Per transaction
+              {t('reports.perTransaction')}
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="glass-elevated">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Items Sold</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('reports.itemsSold')}</CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{dailySummary.itemsSold}</div>
             <p className="text-xs text-muted-foreground">
-              Total units
+              {t('reports.totalUnits')}
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card>
+      <Card className="glass-elevated">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart3 className="h-5 w-5" />
-            Product Sales
+            {t('reports.productSales')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead className="text-right">Quantity Sold</TableHead>
-                <TableHead className="text-right">Revenue</TableHead>
-                <TableHead className="text-right">Avg Price</TableHead>
+                <TableHead>{t('inventory.product')}</TableHead>
+                <TableHead className="text-right">{t('reports.quantitySold')}</TableHead>
+                <TableHead className="text-right">{t('reports.revenue')}</TableHead>
+                <TableHead className="text-right">{t('reports.avgPrice')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

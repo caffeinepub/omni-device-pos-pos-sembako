@@ -43,6 +43,17 @@ export interface Promotion {
     };
     promoId: bigint;
 }
+export interface CreateTransactionInput {
+    payments: Array<PaymentBreakdown>;
+    totalAmount: bigint;
+    items: Array<{
+        unit: ProductUnit;
+        productId: bigint;
+        variantId: bigint;
+        quantity: bigint;
+        price: bigint;
+    }>;
+}
 export interface PaymentMethod {
     id: bigint;
     methodType: PaymentMethodType;
@@ -178,6 +189,7 @@ export interface backendInterface {
     addProductVariant(variant: SaveProductVariantInput): Promise<bigint>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     createInventoryAdjustment(adjustment: StockAdjustment): Promise<void>;
+    createTransaction(input: CreateTransactionInput): Promise<bigint>;
     getAllPayments(): Promise<Array<PaymentBreakdown>>;
     getAllTransactions(): Promise<Array<Transaction>>;
     getCallerUserProfile(): Promise<UserProfile | null>;

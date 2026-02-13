@@ -4,58 +4,66 @@
 
 @layer base {
     :root {
-        --radius: 0.5rem;
-        --background: 0.98 0 0;
-        --foreground: 0.15 0 0;
-        --card: 1 0 0;
-        --card-foreground: 0.15 0 0;
-        --popover: 1 0 0;
-        --popover-foreground: 0.15 0 0;
-        --primary: 0.55 0.22 260;
-        --primary-foreground: 0.98 0 0;
-        --secondary: 0.50 0.20 180;
-        --secondary-foreground: 0.98 0 0;
-        --muted: 0.95 0 0;
-        --muted-foreground: 0.50 0 0;
-        --accent: 0.65 0.18 320;
-        --accent-foreground: 0.98 0 0;
-        --destructive: 0.55 0.22 25;
-        --destructive-foreground: 0.98 0 0;
-        --border: 0.90 0 0;
-        --input: 0.90 0 0;
-        --ring: 0.55 0.22 260;
-        --chart-1: 0.60 0.20 260;
-        --chart-2: 0.55 0.22 180;
-        --chart-3: 0.50 0.18 320;
-        --chart-4: 0.65 0.20 45;
-        --chart-5: 0.70 0.18 140;
+        --radius: 1rem;
+        --background: 0.98 0.01 240;
+        --foreground: 0.15 0.02 260;
+        --card: 0.99 0.005 240;
+        --card-foreground: 0.15 0.02 260;
+        --popover: 0.99 0.005 240;
+        --popover-foreground: 0.15 0.02 260;
+        --primary: 0.58 0.24 270;
+        --primary-foreground: 0.99 0 0;
+        --secondary: 0.52 0.22 200;
+        --secondary-foreground: 0.99 0 0;
+        --muted: 0.96 0.01 240;
+        --muted-foreground: 0.50 0.02 260;
+        --accent: 0.68 0.20 310;
+        --accent-foreground: 0.99 0 0;
+        --destructive: 0.55 0.24 25;
+        --destructive-foreground: 0.99 0 0;
+        --border: 0.92 0.01 240;
+        --input: 0.94 0.01 240;
+        --ring: 0.58 0.24 270;
+        --chart-1: 0.60 0.22 270;
+        --chart-2: 0.55 0.24 200;
+        --chart-3: 0.50 0.20 310;
+        --chart-4: 0.65 0.22 45;
+        --chart-5: 0.70 0.20 140;
+        
+        --glass-bg: 0.98 0.01 240;
+        --glass-border: 0.90 0.02 240;
+        --glass-shadow: 0.50 0.02 260;
     }
 
     .dark {
-        --background: 0.12 0 0;
-        --foreground: 0.95 0 0;
-        --card: 0.15 0 0;
-        --card-foreground: 0.95 0 0;
-        --popover: 0.10 0 0;
-        --popover-foreground: 0.95 0 0;
-        --primary: 0.65 0.24 260;
-        --primary-foreground: 0.12 0 0;
-        --secondary: 0.60 0.22 180;
-        --secondary-foreground: 0.98 0 0;
-        --muted: 0.20 0 0;
-        --muted-foreground: 0.65 0 0;
-        --accent: 0.70 0.20 320;
-        --accent-foreground: 0.98 0 0;
-        --destructive: 0.50 0.25 25;
-        --destructive-foreground: 0.95 0 0;
-        --border: 0.25 0 0;
-        --input: 0.25 0 0;
-        --ring: 0.65 0.24 260;
-        --chart-1: 0.60 0.20 260;
-        --chart-2: 0.55 0.22 180;
-        --chart-3: 0.50 0.18 320;
-        --chart-4: 0.65 0.20 45;
-        --chart-5: 0.70 0.18 140;
+        --background: 0.14 0.02 260;
+        --foreground: 0.96 0.01 240;
+        --card: 0.16 0.02 260;
+        --card-foreground: 0.96 0.01 240;
+        --popover: 0.12 0.02 260;
+        --popover-foreground: 0.96 0.01 240;
+        --primary: 0.68 0.26 270;
+        --primary-foreground: 0.12 0.02 260;
+        --secondary: 0.62 0.24 200;
+        --secondary-foreground: 0.99 0 0;
+        --muted: 0.22 0.02 260;
+        --muted-foreground: 0.68 0.02 240;
+        --accent: 0.72 0.22 310;
+        --accent-foreground: 0.99 0 0;
+        --destructive: 0.52 0.26 25;
+        --destructive-foreground: 0.96 0.01 240;
+        --border: 0.28 0.02 260;
+        --input: 0.26 0.02 260;
+        --ring: 0.68 0.26 270;
+        --chart-1: 0.60 0.22 270;
+        --chart-2: 0.55 0.24 200;
+        --chart-3: 0.50 0.20 310;
+        --chart-4: 0.65 0.22 45;
+        --chart-5: 0.70 0.20 140;
+        
+        --glass-bg: 0.16 0.02 260;
+        --glass-border: 0.32 0.02 260;
+        --glass-shadow: 0.08 0.02 260;
     }
 
     * {
@@ -65,12 +73,65 @@
     body {
         @apply bg-background text-foreground;
         font-feature-settings: "rlig" 1, "calt" 1;
+        background-image: url('/assets/generated/app-bg-glass.dim_1920x1080.png');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
     }
 }
 
 @layer utilities {
     .text-balance {
         text-wrap: balance;
+    }
+    
+    .glass-surface {
+        @apply backdrop-blur-xl bg-opacity-70 dark:bg-opacity-60;
+        background-color: oklch(var(--glass-bg) / 0.7);
+        border: 1px solid oklch(var(--glass-border) / 0.3);
+        box-shadow: 
+            0 8px 32px 0 oklch(var(--glass-shadow) / 0.15),
+            inset 0 1px 0 0 oklch(0.99 0 0 / 0.1);
+    }
+    
+    .glass-card {
+        @apply glass-surface rounded-2xl;
+    }
+    
+    .glass-elevated {
+        @apply glass-surface;
+        box-shadow: 
+            0 12px 48px 0 oklch(var(--glass-shadow) / 0.25),
+            0 4px 16px 0 oklch(var(--glass-shadow) / 0.15),
+            inset 0 1px 0 0 oklch(0.99 0 0 / 0.15),
+            inset 0 -1px 0 0 oklch(0 0 0 / 0.1);
+    }
+    
+    .glass-button {
+        @apply glass-surface transition-all duration-200;
+        box-shadow: 
+            0 4px 16px 0 oklch(var(--glass-shadow) / 0.12),
+            inset 0 1px 0 0 oklch(0.99 0 0 / 0.1);
+    }
+    
+    .glass-button:hover {
+        box-shadow: 
+            0 6px 24px 0 oklch(var(--glass-shadow) / 0.18),
+            inset 0 1px 0 0 oklch(0.99 0 0 / 0.15);
+        transform: translateY(-1px);
+    }
+    
+    .glass-input {
+        @apply backdrop-blur-md bg-opacity-50;
+        background-color: oklch(var(--glass-bg) / 0.5);
+        border: 1px solid oklch(var(--glass-border) / 0.4);
+    }
+    
+    .glass-header {
+        @apply backdrop-blur-2xl bg-opacity-80;
+        background-color: oklch(var(--glass-bg) / 0.8);
+        border-bottom: 1px solid oklch(var(--glass-border) / 0.3);
+        box-shadow: 0 4px 24px 0 oklch(var(--glass-shadow) / 0.1);
     }
 }
 

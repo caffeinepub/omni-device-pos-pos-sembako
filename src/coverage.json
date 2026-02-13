@@ -1,170 +1,129 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T04:46:04.465Z",
+  "generatedAt": "2026-02-13T05:34:23.581Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 6,
-    "implemented": 6,
+    "total": 5,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-17",
-        "summary": "Translate all user-facing UI text across the entire POS application from English to Bahasa Indonesia, including navigation labels, page titles, buttons, form labels/placeholders, empty states, toast messages, dialogs, and error messages. This includes admin modules (Catalog, Inventory, Receiving, Promotions, Payment Methods, Users, CSV Import/Export), POS/Checkout flow, Reports, Sync Status, Returns/Void/Refund flows, and receipt/print preview UI.",
+        "id": "REQ-23",
+        "summary": "Apply a modern glassmorphism + subtle 3D visual refresh across the entire app (POS, Checkout, Admin pages, Reports, dialogs, sheets) while keeping light/dark mode support and ensuring readability.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/i18n/strings.id.ts",
-          "frontend/src/i18n/t.ts",
-          "frontend/src/components/AppLayout.tsx",
-          "frontend/src/features/auth/AuthGate.tsx",
-          "frontend/src/features/auth/ProfileSetupDialog.tsx",
-          "frontend/src/features/auth/IdleLock.tsx",
-          "frontend/src/features/auth/AdminReauthDialog.tsx",
-          "frontend/src/features/catalog/CatalogPage.tsx",
-          "frontend/src/features/catalog/ProductCsvPage.tsx",
-          "frontend/src/features/reports/ReportsPage.tsx",
-          "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/pos/PosPage.tsx",
-          "frontend/src/features/transactions/TransactionDetailsPage.tsx",
-          "frontend/src/features/void/VoidTransactionDialog.tsx",
-          "frontend/src/features/returns/ReturnFlowPage.tsx",
-          "frontend/src/features/sync/SyncStatusPage.tsx",
-          "frontend/src/features/inventory/InventoryPage.tsx",
-          "frontend/src/features/inventory/ReceivingPage.tsx",
-          "frontend/src/features/promotions/PromotionsPage.tsx",
-          "frontend/src/features/payments/PaymentMethodsPage.tsx",
-          "frontend/src/features/admin/UsersPage.tsx",
-          "frontend/src/features/admin/SampleDataLoaderCard.tsx",
-          "frontend/src/components/OfflineIndicator.tsx",
-          "frontend/src/features/receipts/PrintReceiptDialog.tsx",
-          "frontend/src/features/receipts/ReceiptTemplate.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/i18n/strings.id.ts",
-          "frontend/src/i18n/t.ts",
-          "frontend/src/components/AppLayout.tsx",
-          "frontend/src/features/auth/AuthGate.tsx",
-          "frontend/src/features/auth/ProfileSetupDialog.tsx",
-          "frontend/src/features/auth/IdleLock.tsx",
-          "frontend/src/features/catalog/CatalogPage.tsx",
-          "frontend/src/features/catalog/ProductCsvPage.tsx",
-          "frontend/src/components/OfflineIndicator.tsx"
-        ]
-      },
-      {
-        "id": "REQ-18",
-        "summary": "Update all CSV export and import behavior to use Indonesian-friendly semicolon (;) delimiters instead of commas (,). This must apply to: (a) Reports CSV export, and (b) Product CSV export/import, including updating the on-screen CSV format examples/instructions.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/utils/csvExport.ts",
-          "frontend/src/utils/csvParse.ts",
-          "frontend/src/features/reports/ReportsPage.tsx",
-          "frontend/src/features/catalog/ProductCsvPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/utils/csvExport.ts",
-          "frontend/src/utils/csvParse.ts",
-          "frontend/src/features/catalog/ProductCsvPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-19",
-        "summary": "Fix the product creation/edit flow so that the Category dropdown is populated and selectable, and add an admin UI to create/manage product categories (at minimum: create new category with name + active flag). Ensure newly created categories are persisted in offline master data and are available immediately in the product form without requiring a reload.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/catalog/CatalogPage.tsx",
-          "frontend/src/features/catalog/CatalogPage.tsx",
-          "frontend/src/offline/masterDataCache.ts",
-          "frontend/src/offline/storage.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/catalog/CatalogPage.tsx",
-          "frontend/src/features/catalog/CatalogPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-20",
-        "summary": "Audit admin-facing pages and actions to identify buttons/controls that are currently non-functional, then either (a) wire them to complete their intended flows using existing features (offline master data + sync queue patterns), or (b) disable them with a clear (Indonesian) explanation in the UI so the user is not blocked/confused. Prioritize fixing anything that blocks core admin workflows (e.g., catalog/product setup).",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/catalog/CatalogPage.tsx",
-          "frontend/src/features/admin/UsersPage.tsx",
-          "frontend/src/features/admin/SampleDataLoaderCard.tsx",
-          "frontend/src/features/promotions/PromotionsPage.tsx",
-          "frontend/src/features/payments/PaymentMethodsPage.tsx",
-          "frontend/src/features/inventory/InventoryPage.tsx",
-          "frontend/src/features/inventory/ReceivingPage.tsx",
-          "frontend/src/features/returns/ReturnFlowPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/catalog/CatalogPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-21",
-        "summary": "Add an in-app PWA installation guide and make it discoverable from the UI. The guide must explain how to install the POS as an app on Android (Chrome), iOS (Safari), and Desktop (Chrome/Edge), and include a short troubleshooting section (e.g., install option not showing). Use Bahasa Indonesia for all guide text.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/pwa/PwaInstallGuidePage.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/AppLayout.tsx",
-          "frontend/src/pwa/useInstallPrompt.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/pwa/PwaInstallGuidePage.tsx",
-          "frontend/src/App.tsx",
-          "frontend/src/components/AppLayout.tsx",
-          "frontend/src/pwa/useInstallPrompt.ts"
-        ]
-      },
-      {
-        "id": "REQ-22",
-        "summary": "Refresh the visual styling to be more colorful while remaining consistent and readable across all POS modules, and maintaining light/dark mode support. Apply the updated theme consistently to navigation, cards, tables, dialogs, and primary/secondary actions.",
-        "status": "implemented",
-        "plannedFiles": [
+          "frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png",
           "frontend/src/index.css",
           "frontend/tailwind.config.js",
-          "frontend/public/manifest.webmanifest",
+          "frontend/src/components/AppLayout.tsx",
+          "frontend/src/features/pos/PosPage.tsx",
+          "frontend/src/features/checkout/CheckoutPage.tsx",
+          "frontend/src/features/inventory/InventoryPage.tsx",
+          "frontend/src/features/catalog/CatalogPage.tsx",
+          "frontend/src/features/reports/ReportsPage.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png",
+          "frontend/src/index.css",
+          "frontend/tailwind.config.js",
+          "frontend/src/components/AppLayout.tsx",
+          "frontend/src/features/pos/PosPage.tsx",
+          "frontend/src/features/checkout/CheckoutPage.tsx",
+          "frontend/src/features/inventory/InventoryPage.tsx",
+          "frontend/src/features/reports/ReportsPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-24",
+        "summary": "Ensure 100% of user-facing UI text is in Bahasa Indonesia by removing remaining hardcoded English strings and routing all labels, headings, placeholders, empty states, validation errors, and toast messages through the existing Indonesian i18n strings helper.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/i18n/strings.id.ts",
+          "frontend/src/features/pos/PosPage.tsx",
+          "frontend/src/features/checkout/CheckoutPage.tsx",
+          "frontend/src/features/checkout/paymentValidation.ts",
+          "frontend/src/features/inventory/InventoryPage.tsx",
+          "frontend/src/features/reports/ReportsPage.tsx",
+          "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
           "frontend/src/components/AppLayout.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/index.css",
-          "frontend/public/manifest.webmanifest",
+          "frontend/src/i18n/strings.id.ts",
+          "frontend/src/features/pos/PosPage.tsx",
+          "frontend/src/features/checkout/CheckoutPage.tsx",
+          "frontend/src/features/checkout/paymentValidation.ts",
+          "frontend/src/features/inventory/InventoryPage.tsx",
+          "frontend/src/features/reports/ReportsPage.tsx",
+          "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
           "frontend/src/components/AppLayout.tsx"
         ]
+      },
+      {
+        "id": "REQ-25",
+        "summary": "Fix/rework the Checkout calculations so that the transaction total is always correct and automatically populated/updated based on the current cart (including item-level discounts, cart discount, and tax toggle), and make payment remaining/change calculations update live as the cashier enters amounts.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/checkout/CheckoutPage.tsx",
+          "frontend/src/features/checkout/paymentValidation.ts",
+          "frontend/src/features/pos/cartStore.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/checkout/CheckoutPage.tsx",
+          "frontend/src/features/checkout/paymentValidation.ts",
+          "frontend/src/features/pos/cartStore.ts"
+        ]
+      },
+      {
+        "id": "REQ-26",
+        "summary": "Implement automatic stock reduction when a sale is completed: when a transaction is created successfully, decrement on-hand inventory for each sold product variant by the sold quantity, persist the new stock in offline master data, and reflect the updated stock immediately in Inventory views.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/offline/storage.ts",
+          "frontend/src/features/checkout/CheckoutPage.tsx",
+          "frontend/src/features/inventory/InventoryPage.tsx",
+          "frontend/src/i18n/strings.id.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/checkout/CheckoutPage.tsx",
+          "frontend/src/features/inventory/InventoryPage.tsx",
+          "frontend/src/i18n/strings.id.ts"
+        ]
+      },
+      {
+        "id": "REQ-27",
+        "summary": "Add backend support for creating a completed transaction that also updates inventory: expose a single-actor Motoko method to record a transaction and decrement stock for each line item atomically, with user authorization consistent with existing cashier/user permissions.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
-    "build-template/README.md",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/manifest.webmanifest",
-    "frontend/src/App.tsx",
+    "frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
     "frontend/src/components/AppLayout.tsx",
-    "frontend/src/components/OfflineIndicator.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
-    "frontend/src/features/auth/AuthGate.tsx",
-    "frontend/src/features/auth/IdleLock.tsx",
-    "frontend/src/features/auth/ProfileSetupDialog.tsx",
-    "frontend/src/features/catalog/CatalogPage.tsx",
-    "frontend/src/features/catalog/ProductCsvPage.tsx",
-    "frontend/src/features/pwa/PwaInstallGuidePage.tsx",
+    "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
+    "frontend/src/features/checkout/CheckoutPage.tsx",
+    "frontend/src/features/checkout/paymentValidation.ts",
+    "frontend/src/features/inventory/InventoryPage.tsx",
+    "frontend/src/features/pos/PosPage.tsx",
+    "frontend/src/features/pos/cartStore.ts",
+    "frontend/src/features/reports/ReportsPage.tsx",
     "frontend/src/i18n/strings.id.ts",
-    "frontend/src/i18n/t.ts",
     "frontend/src/index.css",
-    "frontend/src/pwa/useInstallPrompt.ts",
-    "frontend/src/utils/csvExport.ts",
-    "frontend/src/utils/csvParse.ts",
+    "frontend/tailwind.config.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

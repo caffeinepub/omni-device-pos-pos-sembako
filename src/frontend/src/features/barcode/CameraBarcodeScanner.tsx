@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Camera, XCircle } from 'lucide-react';
+import { t } from '../../i18n/t';
 
 interface CameraBarcodeScannerProps {
   onScan: (barcode: string) => void;
@@ -26,7 +27,7 @@ export function CameraBarcodeScanner({ onScan }: CameraBarcodeScannerProps) {
           setIsScanning(true);
         }
       } catch (err) {
-        setError('Failed to access camera. Please grant camera permissions.');
+        setError(t('camera.failedAccess'));
       }
     };
 
@@ -40,7 +41,7 @@ export function CameraBarcodeScanner({ onScan }: CameraBarcodeScannerProps) {
   }, []);
 
   const handleManualInput = () => {
-    const barcode = prompt('Enter barcode manually:');
+    const barcode = prompt(t('pos.enterBarcode'));
     if (barcode) {
       onScan(barcode);
     }
@@ -48,7 +49,7 @@ export function CameraBarcodeScanner({ onScan }: CameraBarcodeScannerProps) {
 
   if (error) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="glass-card">
         <XCircle className="h-4 w-4" />
         <AlertDescription>{error}</AlertDescription>
       </Alert>
@@ -57,7 +58,7 @@ export function CameraBarcodeScanner({ onScan }: CameraBarcodeScannerProps) {
 
   return (
     <div className="space-y-4">
-      <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+      <div className="relative aspect-video bg-black rounded-2xl overflow-hidden glass-elevated">
         <video
           ref={videoRef}
           autoPlay
@@ -71,11 +72,11 @@ export function CameraBarcodeScanner({ onScan }: CameraBarcodeScannerProps) {
           </div>
         )}
       </div>
-      <Button onClick={handleManualInput} variant="outline" className="w-full">
-        Enter Barcode Manually
+      <Button onClick={handleManualInput} variant="outline" className="w-full glass-button rounded-xl">
+        {t('pos.enterBarcodeManually')}
       </Button>
       <p className="text-sm text-muted-foreground text-center">
-        Position the barcode within the camera view or enter manually
+        {t('pos.positionBarcode')}
       </p>
     </div>
   );

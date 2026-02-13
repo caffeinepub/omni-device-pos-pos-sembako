@@ -10,6 +10,7 @@ import { Warehouse, AlertTriangle, Plus } from 'lucide-react';
 import { useMasterData } from '../../offline/masterDataCache';
 import { saveMasterData, queueForSync } from '../../offline/storage';
 import { toast } from 'sonner';
+import { t } from '../../i18n/t';
 
 export function InventoryPage() {
   const { data: products, refetch } = useMasterData('products');
@@ -17,7 +18,7 @@ export function InventoryPage() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [adjustment, setAdjustment] = useState({ quantity: '', reason: '' });
 
-  const lowStockProducts = (products || []).filter((p: any) => p.stock < 10);
+  const lowStockProducts = (products || []).filter((p: any) => (p.stock || 0) < 10);
 
   const handleAdjustment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +28,7 @@ export function InventoryPage() {
       const allProducts = products || [];
       const updatedProducts = allProducts.map((p: any) =>
         p.id === selectedProduct.id
-          ? { ...p, stock: p.stock + Number(adjustment.quantity) }
+          ? { ...p, stock: (p.stock || 0) + Number(adjustment.quantity) }
           : p
       );
 
@@ -40,38 +41,38 @@ export function InventoryPage() {
         timestamp: Date.now(),
       });
 
-      toast.success('Stock adjusted successfully');
+      toast.success(t('inventory.stockAdjusted'));
       setShowDialog(false);
       setSelectedProduct(null);
       setAdjustment({ quantity: '', reason: '' });
       refetch();
     } catch (error) {
-      toast.error(`Failed to adjust stock: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      toast.error(`${t('inventory.stockAdjustFailed')}: ${error instanceof Error ? error.message : t('common.error')}`);
     }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Inventory Management</h1>
-        <p className="text-muted-foreground mt-2">Monitor stock levels and make adjustments</p>
+        <h1 className="text-3xl font-bold">{t('inventory.title')}</h1>
+        <p className="text-muted-foreground mt-2">{t('inventory.description')}</p>
       </div>
 
       {lowStockProducts.length > 0 && (
-        <Card className="border-destructive">
+        <Card className="border-destructive glass-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-5 w-5" />
-              Low Stock Alert
+              {t('inventory.lowStockAlert')}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm mb-4">{lowStockProducts.length} products are running low on stock</p>
+            <p className="text-sm mb-4">{lowStockProducts.length} {t('inventory.lowStockMessage')}</p>
             <div className="space-y-2">
               {lowStockProducts.map((product: any) => (
-                <div key={product.id} className="flex items-center justify-between p-2 border rounded">
+                <div key={product.id} className="flex items-center justify-between p-2 border border-border/30 rounded-xl glass-card">
                   <span className="font-medium">{product.name}</span>
-                  <Badge variant="destructive">{product.stock} units</Badge>
+                  <Badge variant="destructive" className="glass-button">{product.stock || 0} {t('inventory.units')}</Badge>
                 </div>
               ))}
             </div>
@@ -79,22 +80,22 @@ export function InventoryPage() {
         </Card>
       )}
 
-      <Card>
+      <Card className="glass-elevated">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Warehouse className="h-5 w-5" />
-            Stock Levels
+            {t('inventory.stockLevels')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Product</TableHead>
-                <TableHead>SKU</TableHead>
-                <TableHead>Current Stock</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Actions</TableHead>
+                <TableHead>{t('inventory.product')}</TableHead>
+                <TableHead>{t('catalog.sku')}</TableHead>
+                <TableHead>{t('inventory.currentStock')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead>{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -104,8 +105,8 @@ export function InventoryPage() {
                   <TableCell>{product.variants[0]?.sku}</TableCell>
                   <TableCell>{product.stock || 0}</TableCell>
                   <TableCell>
-                    <Badge variant={product.stock < 10 ? 'destructive' : 'default'}>
-                      {product.stock < 10 ? 'Low' : 'OK'}
+                    <Badge variant={(product.stock || 0) < 10 ? 'destructive' : 'default'} className="glass-button">
+                      {(product.stock || 0) < 10 ? t('inventory.low') : t('inventory.ok')}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -114,45 +115,47 @@ export function InventoryPage() {
                       if (!open) setSelectedProduct(null);
                     }}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm" onClick={() => setSelectedProduct(product)}>
+                        <Button variant="outline" size="sm" onClick={() => setSelectedProduct(product)} className="glass-button rounded-xl">
                           <Plus className="h-4 w-4 mr-1" />
-                          Adjust
+                          {t('inventory.adjust')}
                         </Button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className="glass-elevated">
                         <DialogHeader>
-                          <DialogTitle>Adjust Stock: {product.name}</DialogTitle>
+                          <DialogTitle>{t('inventory.adjustStock')}: {product.name}</DialogTitle>
                         </DialogHeader>
                         <form onSubmit={handleAdjustment} className="space-y-4">
                           <div className="space-y-2">
-                            <Label htmlFor="quantity">Quantity Change</Label>
+                            <Label htmlFor="quantity">{t('inventory.quantityChange')}</Label>
                             <Input
                               id="quantity"
                               type="number"
                               value={adjustment.quantity}
                               onChange={(e) => setAdjustment({ ...adjustment, quantity: e.target.value })}
-                              placeholder="Enter positive or negative number"
+                              placeholder={t('inventory.enterQuantity')}
                               required
+                              className="glass-input rounded-xl"
                             />
                             <p className="text-sm text-muted-foreground">
-                              Current: {product.stock} → New: {product.stock + Number(adjustment.quantity || 0)}
+                              {t('inventory.current')}: {product.stock || 0} → {t('inventory.new')}: {(product.stock || 0) + Number(adjustment.quantity || 0)}
                             </p>
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="reason">Reason</Label>
+                            <Label htmlFor="reason">{t('inventory.reason')}</Label>
                             <Input
                               id="reason"
                               value={adjustment.reason}
                               onChange={(e) => setAdjustment({ ...adjustment, reason: e.target.value })}
-                              placeholder="e.g., Damaged, Recount, etc."
+                              placeholder={t('inventory.reasonPlaceholder')}
                               required
+                              className="glass-input rounded-xl"
                             />
                           </div>
                           <div className="flex gap-2 justify-end">
-                            <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>
-                              Cancel
+                            <Button type="button" variant="outline" onClick={() => setShowDialog(false)} className="glass-button rounded-xl">
+                              {t('common.cancel')}
                             </Button>
-                            <Button type="submit">Apply Adjustment</Button>
+                            <Button type="submit" className="glass-button rounded-xl">{t('inventory.applyAdjustment')}</Button>
                           </div>
                         </form>
                       </DialogContent>

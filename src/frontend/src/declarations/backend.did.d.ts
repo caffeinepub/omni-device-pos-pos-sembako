@@ -10,6 +10,19 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface CreateTransactionInput {
+  'payments' : Array<PaymentBreakdown>,
+  'totalAmount' : bigint,
+  'items' : Array<
+    {
+      'unit' : ProductUnit,
+      'productId' : bigint,
+      'variantId' : bigint,
+      'quantity' : bigint,
+      'price' : bigint,
+    }
+  >,
+}
 export interface PaymentBreakdown { 'methodId' : bigint, 'amount' : bigint }
 export interface PaymentMethod {
   'id' : bigint,
@@ -145,6 +158,7 @@ export interface _SERVICE {
   'addProductVariant' : ActorMethod<[SaveProductVariantInput], bigint>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'createInventoryAdjustment' : ActorMethod<[StockAdjustment], undefined>,
+  'createTransaction' : ActorMethod<[CreateTransactionInput], bigint>,
   'getAllPayments' : ActorMethod<[], Array<PaymentBreakdown>>,
   'getAllTransactions' : ActorMethod<[], Array<Transaction>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,

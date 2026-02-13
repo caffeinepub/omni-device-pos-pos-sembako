@@ -1,14 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Localize the POS UI to Bahasa Indonesia, fix Catalog category selection and category management, switch CSV delimiter to semicolon, add a PWA install guide, and refresh the app theme to be more colorful.
+**Goal:** Refresh the entire app with a modern glassmorphism + subtle 3D theme, complete the Bahasa Indonesia localization for all user-facing text, fix Checkout total/remaining/change calculations to update live, and ensure stock automatically decrements after completed sales (including backend support for atomic transaction + inventory updates).
 
 **Planned changes:**
-- Translate all user-facing UI text across the POS app (including admin modules, checkout flow, reports, sync/returns/refunds, and receipt preview/print UI) to Bahasa Indonesia.
-- Update CSV import/export for Reports and Products to use semicolon (;) delimiters, including updating any on-screen CSV examples and help text.
-- Fix Add/Edit Product Category dropdown so it populates and is selectable; add admin UI to create/manage categories (name + active flag) and ensure categories persist offline and appear immediately in product forms.
-- Audit admin pages for non-functional controls and either wire them to existing end-to-end flows or disable them with clear Bahasa Indonesia explanations to avoid blocked workflows.
-- Add an in-app, discoverable PWA installation guide (Android Chrome, iOS Safari, Desktop Chrome/Edge) with troubleshooting, in Bahasa Indonesia, and integrate with existing install prompt handling where supported.
-- Refresh visual styling to a more colorful, consistent theme across modules while keeping light/dark mode readable.
+- Apply a consistent glassmorphism/3D visual style across all major UI surfaces (layout, cards, tables, dialogs/sheets, buttons, inputs) for all app routes, supporting both light and dark mode with readable contrast.
+- Replace remaining hardcoded English UI text with the existing Indonesian i18n helper/strings across POS, Checkout, admin modules, and shared components (labels, placeholders, empty states, validation, toasts).
+- Rework Checkout calculations so Total is always correctly auto-populated and updates immediately with cart/discount/tax changes; show live Remaining and Change due as payment amounts are typed; block completion until fully paid, with Bahasa Indonesia messaging.
+- Implement automatic stock reduction after a successful sale: decrement on-hand inventory per sold variant, persist updates in offline master data, and reflect changes immediately in Inventory views with clear Bahasa Indonesia errors on inconsistencies.
+- Add a backend Motoko method to create a completed transaction and decrement inventory atomically with existing user authorization, compatible with the existing offline sync queue pattern.
 
-**User-visible outcome:** The app UI is fully in Bahasa Indonesia, CSV files use Indonesian-friendly semicolons, product categories can be created and selected reliably, admin actions no longer “do nothing,” users can follow an in-app guide to install the PWA, and the interface looks more colorful while remaining consistent in light and dark modes.
+**User-visible outcome:** The app has a cohesive modern glass/3D look in light/dark mode, all screens display 100% Bahasa Indonesia text, Checkout totals and change/remaining update instantly as the cart and payments change, and inventory stock decreases automatically right after completing a sale (with reliable backend support).

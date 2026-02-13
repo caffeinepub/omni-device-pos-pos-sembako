@@ -1,20 +1,25 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
-  "summary": "Build a modern installable PWA POS (single-outlet, offline-lite) for Indonesian UMKM retail/F&B using Caffeine stack: backend Motoko + frontend React/TypeScript. Scope confirmed as full-feature implementation (POS core, products, stock/purchasing, refunds/void, promotions, reports, printing, barcode scanning, roles/auth, offline queue + sync).",
+  "projectStateVersion": 7,
+  "summary": "Build a modern installable PWA POS (single-outlet, offline-lite) for Indonesian UMKM retail/F&B using Caffeine stack: backend Motoko + frontend React/TypeScript. Add a full-app modern glass/3D UI theme refresh, translate all UI to 100% Bahasa Indonesia, and fix/rework checkout so totals, change (kembalian), and automatic stock reduction work correctly.",
   "architectural_notes": [
     "Tech stack confirmed: backend Motoko + frontend React/TypeScript (no Laravel/PHP/MySQL/Vue).",
     "Distribution confirmed: installable PWA (not native APK).",
     "Core constraints: single-outlet + offline-lite with queued sync, retry/exponential backoff, and last-write-wins conflict resolution.",
-    "CSV format decision: use semicolon (;) as delimiter for Indonesian-standard CSV exports and imports."
+    "CSV format decision: use semicolon (;) as delimiter for Indonesian-standard CSV exports and imports.",
+    "UI direction updated: apply a modern glassmorphism/3D-styled theme consistently across the entire app (not POS-only)."
   ],
   "known_issues": [
     "Initial automated build attempt failed ('Our AI couldn't handle that request'); may require smaller/clearer build steps.",
     "Product form: category dropdown is empty/unselectable; user also cannot add new categories, blocking adding products.",
     "Some admin UI actions/buttons are non-functional (needs triage of which buttons/flows are disabled or not wired).",
-    "Build/run pipeline instability: repeated internal LLM/Unexpected AI errors when attempting rebuild."
+    "Build/run pipeline instability: repeated internal LLM/Unexpected AI errors when attempting rebuild.",
+    "Checkout flow bug: transaction total is not auto-populated/updated when products are added.",
+    "Checkout flow bug: change due (kembalian) is not auto-calculated/visible after entering amount tendered.",
+    "Inventory bug: stock is not automatically reduced after a product is sold / sale finalized."
   ],
   "isFixRequest": true,
+  "imageRequirements": "## Required Images\n- Abstract colorful glass gradient background with soft bokeh highlights (app-bg-glass.dim_1920x1080.png)",
   "existing_features": [
     {
       "id": "feature-create-the-core-pos-sales-flow-ui-for-a-single-outlet-retail-f-b-pos-product-browse-search-add-to-cart-edit-quantity-and-per-item-notes-per-item-discount-and-per-transaction-discount-simple-tax-toggle-hold-resume-carts-and-finalize-sale",
@@ -191,6 +196,38 @@
         "REQ-22"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-apply-a-modern-glassmorphism-subtle-3d-visual-refresh-across-the-entire-app-pos-checkout-admin-pages-reports-dialogs-sheets-while-keeping-light-dark-mode-support-and-ensuring-readability",
+      "title": "Apply a modern glassmorphism + subtle 3D visual refresh across the entire app (POS, Checkout, Admin pages, Reports, dialogs, sheets) while keeping light/dark mode support and ensuring readability.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-100-of-user-facing-ui-text-is-in-bahasa-indonesia-by-removing-remaining-hardcoded-english-strings-and-routing-all-labels-headings-placeholders-empty-states-validation-errors-and-toast-messages-through-the-existing-indonesian-i18n-strings-helper",
+      "title": "Ensure 100% of user-facing UI text is in Bahasa Indonesia by removing remaining hardcoded English strings and routing all labels, headings, placeholders, empty states, validation errors, and toast messages through the existing Indonesian i18n strings helper.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-rework-the-checkout-calculations-so-that-the-transaction-total-is-always-correct-and-automatically-populated-updated-based-on-the-current-cart-including-item-level-discounts-cart-discount-and-tax-toggle-and-make-payment-remaining-change-calculations-update-live-as-the-cashier-enters-amounts",
+      "title": "Fix/rework the Checkout calculations so that the transaction total is always correct and automatically populated/updated based on the current cart (including item-level discounts, cart discount, and tax toggle), and make payment remaining/change calculations update live as the cashier enters amounts.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-automatic-stock-reduction-when-a-sale-is-completed-when-a-transaction-is-created-successfully-decrement-on-hand-inventory-for-each-sold-product-variant-by-the-sold-quantity-persist-the-new-stock-in-offline-master-data-and-reflect-the-updated-stock-immediately-in-inventory-views",
+      "title": "Implement automatic stock reduction when a sale is completed: when a transaction is created successfully, decrement on-hand inventory for each sold product variant by the sold quantity, persist the new stock in offline master data, and reflect the updated stock immediately in Inventory views.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -270,6 +307,26 @@
       "id": "AR-13",
       "summary": "Update visual styling to be more colorful (refresh theme/design system while staying consistent across modules)",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Full-app modern glassmorphism/3D UI/UX theme refresh across all modules (POS, checkout, admin)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Rework/fix checkout calculations and inventory effects: auto-fill totals, auto-calculate change due, and auto-decrement stock on completed sale",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Add backend support for creating a completed transaction that also updates inventory: expose a single-actor Motoko method to record a transaction and decrement stock for each line item atomically, with user authorization consistent with existing cashier/user permissions.",
+      "reqIds": [
+        "REQ-27"
+      ],
       "status": "pending"
     }
   ],

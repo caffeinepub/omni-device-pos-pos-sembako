@@ -89,6 +89,9 @@ export const id = {
     productNotFound: 'Produk tidak ditemukan untuk barcode',
     cartEmptyError: 'Keranjang kosong',
     wholesale: 'Grosir',
+    enterBarcode: 'Masukkan Barcode',
+    enterBarcodeManually: 'Masukkan Barcode Secara Manual',
+    positionBarcode: 'Posisikan barcode di dalam tampilan kamera atau masukkan secara manual',
   },
 
   // Checkout
@@ -98,6 +101,8 @@ export const id = {
     paymentMethod: 'Metode Pembayaran',
     selectPaymentMethod: 'Pilih metode pembayaran',
     amountReceived: 'Jumlah Diterima',
+    amount: 'Jumlah',
+    remaining: 'Sisa',
     change: 'Kembalian',
     completeTransaction: 'Selesaikan Transaksi',
     processing: 'Memproses...',
@@ -108,6 +113,11 @@ export const id = {
     newTransaction: 'Transaksi Baru',
     selectPaymentError: 'Silakan pilih metode pembayaran',
     insufficientPayment: 'Jumlah pembayaran tidak mencukupi',
+    noPaymentMethods: 'Tidak ada metode pembayaran tersedia',
+    addPayment: 'Tambah Pembayaran',
+    paymentAdded: 'Pembayaran ditambahkan',
+    stockUpdateFailed: 'Gagal memperbarui stok',
+    productNotFoundInStock: 'Produk tidak ditemukan dalam stok',
   },
 
   // Catalog
@@ -137,38 +147,31 @@ export const id = {
     categoryName: 'Nama Kategori',
     categoryCreated: 'Kategori berhasil dibuat',
     categorySaveFailed: 'Gagal menyimpan kategori',
-    categoryList: 'Daftar Kategori',
   },
 
-  // CSV Import/Export
-  csv: {
-    title: 'Impor/Ekspor CSV',
-    description: 'Impor dan ekspor data produk dalam format CSV',
-    exportProducts: 'Ekspor Produk',
-    exportDescription: 'Unduh semua produk sebagai file CSV. File ini dapat diedit dan diimpor kembali.',
-    exportToCsv: 'Ekspor ke CSV',
-    importProducts: 'Impor Produk',
-    importDescription: 'Unggah file CSV untuk mengimpor atau memperbarui produk. File harus sesuai dengan format ekspor.',
-    importing: 'Mengimpor...',
-    exportSuccess: 'Produk berhasil diekspor',
-    exportFailed: 'Ekspor gagal',
-    importSuccess: 'produk berhasil diimpor',
-    importFailed: 'Impor gagal',
-    importErrors: 'Kesalahan Impor:',
-    importCompletedWithErrors: 'Impor selesai dengan kesalahan',
-    csvFormat: 'Format CSV',
-    csvFormatDescription: 'File CSV harus menggunakan titik koma (;) sebagai pemisah dan memiliki kolom berikut:',
-    csvExample: 'Contoh:',
-    csvColumns: {
-      name: 'nama',
-      categoryId: 'idKategori',
-      sku: 'sku',
-      barcode: 'barcode',
-      retailPrice: 'hargaEceran',
-      wholesalePrice: 'hargaGrosir',
-      cost: 'hargaPokok',
-      active: 'aktif',
-    },
+  // Inventory
+  inventory: {
+    title: 'Manajemen Inventori',
+    description: 'Pantau level stok dan lakukan penyesuaian',
+    lowStockAlert: 'Peringatan Stok Rendah',
+    lowStockMessage: 'produk stoknya hampir habis',
+    stockLevels: 'Level Stok',
+    product: 'Produk',
+    currentStock: 'Stok Saat Ini',
+    adjust: 'Sesuaikan',
+    adjustStock: 'Sesuaikan Stok',
+    quantityChange: 'Perubahan Kuantitas',
+    enterQuantity: 'Masukkan angka positif atau negatif',
+    current: 'Saat ini',
+    new: 'Baru',
+    reason: 'Alasan',
+    reasonPlaceholder: 'mis., Rusak, Recount, dll.',
+    applyAdjustment: 'Terapkan Penyesuaian',
+    stockAdjusted: 'Stok berhasil disesuaikan',
+    stockAdjustFailed: 'Gagal menyesuaikan stok',
+    low: 'Rendah',
+    ok: 'OK',
+    units: 'unit',
   },
 
   // Reports
@@ -186,255 +189,30 @@ export const id = {
     itemsSold: 'Barang Terjual',
     totalUnits: 'Total unit',
     productSales: 'Penjualan Produk',
-    product: 'Produk',
-    quantitySold: 'Jumlah Terjual',
+    quantitySold: 'Kuantitas Terjual',
     revenue: 'Pendapatan',
     avgPrice: 'Harga Rata-rata',
-    reportExported: 'Laporan berhasil diekspor',
+    exportSuccess: 'Laporan berhasil diekspor',
     exportFailed: 'Ekspor gagal',
   },
 
-  // Inventory
-  inventory: {
-    title: 'Inventori',
-    description: 'Kelola tingkat stok dan penyesuaian',
-    adjustStock: 'Sesuaikan Stok',
-    currentStock: 'Stok Saat Ini',
-    adjustment: 'Penyesuaian',
-    reason: 'Alasan',
-    reasonPlaceholder: 'Masukkan alasan penyesuaian',
-    stockAdjusted: 'Stok berhasil disesuaikan',
-    adjustmentFailed: 'Penyesuaian gagal',
-    lowStock: 'Stok Rendah',
-    outOfStock: 'Stok Habis',
-  },
-
-  // Receiving
-  receiving: {
-    title: 'Penerimaan Barang',
-    description: 'Catat penerimaan stok baru',
-    receiveStock: 'Terima Stok',
-    quantity: 'Jumlah',
-    supplier: 'Pemasok',
-    supplierPlaceholder: 'Nama pemasok',
-    notes: 'Catatan',
-    notesPlaceholder: 'Catatan tambahan',
-    stockReceived: 'Stok berhasil diterima',
-    receivingFailed: 'Penerimaan gagal',
-  },
-
-  // Promotions
-  promotions: {
-    title: 'Promosi',
-    description: 'Kelola promosi dan diskon',
-    addPromotion: 'Tambah Promosi',
-    editPromotion: 'Edit Promosi',
-    promotionName: 'Nama Promosi',
-    promotionType: 'Jenis Promosi',
-    percentageDiscount: 'Diskon Persentase',
-    fixedDiscount: 'Diskon Tetap',
-    buyOneGetOne: 'Beli 1 Gratis 1',
-    discountValue: 'Nilai Diskon',
-    validFrom: 'Berlaku Dari',
-    validTo: 'Berlaku Sampai',
-    promotionCreated: 'Promosi berhasil dibuat',
-    promotionUpdated: 'Promosi berhasil diperbarui',
-    promotionSaveFailed: 'Gagal menyimpan promosi',
-  },
-
-  // Payment Methods
-  paymentMethods: {
-    title: 'Metode Pembayaran',
-    description: 'Kelola metode pembayaran yang tersedia',
-    addPaymentMethod: 'Tambah Metode Pembayaran',
-    methodName: 'Nama Metode',
-    methodType: 'Jenis Metode',
-    cash: 'Tunai',
-    qrCode: 'Kode QR',
-    bankTransfer: 'Transfer Bank',
-    creditCard: 'Kartu Kredit',
-    debitCard: 'Kartu Debit',
-    custom: 'Kustom',
-    enabled: 'Diaktifkan',
-    disabled: 'Dinonaktifkan',
-    methodCreated: 'Metode pembayaran berhasil dibuat',
-    methodSaveFailed: 'Gagal menyimpan metode pembayaran',
-  },
-
-  // Users
-  users: {
-    title: 'Pengguna',
-    description: 'Kelola pengguna dan peran',
-    addUser: 'Tambah Pengguna',
-    userName: 'Nama Pengguna',
-    userRole: 'Peran Pengguna',
-    userCreated: 'Pengguna berhasil dibuat',
-    userSaveFailed: 'Gagal menyimpan pengguna',
-  },
-
-  // Transactions
-  transactions: {
-    title: 'Transaksi',
-    transactionDetails: 'Detail Transaksi',
-    transactionId: 'ID Transaksi',
-    date: 'Tanggal',
-    items: 'Barang',
-    quantity: 'Jumlah',
-    price: 'Harga',
-    paymentMethod: 'Metode Pembayaran',
-    amount: 'Jumlah',
-    completed: 'Selesai',
-    voided: 'Dibatalkan',
-    refunded: 'Dikembalikan',
-    partiallyRefunded: 'Dikembalikan Sebagian',
-  },
-
-  // Returns
-  returns: {
-    title: 'Retur Barang',
-    description: 'Proses pengembalian dan pengembalian dana pelanggan',
-    lookupTransaction: 'Cari Transaksi',
-    transactionId: 'ID Transaksi',
-    returnReason: 'Alasan Retur',
-    returnReasonPlaceholder: 'Masukkan alasan retur',
-    processReturn: 'Proses Retur',
-    returnProcessed: 'Retur berhasil diproses',
-    returnFailed: 'Retur gagal',
-    returnPolicy: 'Kebijakan Retur',
-    returnPolicyDescription: 'Retur dapat dilakukan dalam 30 hari sejak pembelian dengan struk asli.',
-  },
-
-  // Sync Status
-  sync: {
-    title: 'Status Sinkronisasi',
-    description: 'Pantau status sinkronisasi data',
-    lastSync: 'Sinkronisasi Terakhir',
-    pendingItems: 'Item Tertunda',
-    failedItems: 'Item Gagal',
-    syncNow: 'Sinkronkan Sekarang',
-    syncing: 'Menyinkronkan...',
-    syncSuccess: 'Sinkronisasi berhasil',
-    syncFailed: 'Sinkronisasi gagal',
-    queueEmpty: 'Tidak ada item yang perlu disinkronkan',
-    operation: 'Operasi',
-    entity: 'Entitas',
-    retryCount: 'Percobaan Ulang',
-  },
-
-  // Offline
-  offline: {
-    youAreOffline: 'Anda sedang offline',
-    offlineDescription: 'Transaksi akan diantrekan dan disinkronkan saat koneksi pulih.',
-  },
-
-  // Receipt
-  receipt: {
-    receipt: 'STRUK',
-    date: 'Tanggal',
-    transactionId: 'ID Transaksi',
-    cashier: 'Kasir',
-    items: 'Barang',
-    qty: 'Jml',
-    price: 'Harga',
-    subtotal: 'Subtotal',
-    discount: 'Diskon',
-    tax: 'Pajak',
-    total: 'Total',
-    payment: 'Pembayaran',
-    method: 'Metode',
-    amount: 'Jumlah',
-    change: 'Kembalian',
-    thankYou: 'Terima kasih atas kunjungan Anda!',
-    printReceipt: 'Cetak Struk',
-    receiptWidth: 'Lebar Struk',
-    print: 'Cetak',
-  },
-
-  // Sample Data
-  sampleData: {
-    title: 'Muat Data Contoh',
-    description: 'Muat data contoh untuk pengujian',
-    loadSampleData: 'Muat Data Contoh',
-    loading: 'Memuat...',
-    confirmTitle: 'Muat Data Contoh?',
-    confirmDescription: 'Ini akan menambahkan produk, kategori, dan metode pembayaran contoh ke sistem Anda.',
-    dataLoaded: 'Data contoh berhasil dimuat',
-    loadFailed: 'Gagal memuat data contoh',
-  },
-
-  // Void Transaction
-  void: {
-    title: 'Batalkan Transaksi',
-    description: 'Batalkan transaksi ini',
-    reason: 'Alasan Pembatalan',
-    reasonPlaceholder: 'Masukkan alasan pembatalan',
-    voidTransaction: 'Batalkan Transaksi',
-    voiding: 'Membatalkan...',
-    transactionVoided: 'Transaksi berhasil dibatalkan',
-    voidFailed: 'Pembatalan gagal',
-    adminAuthRequired: 'Otorisasi admin diperlukan',
-  },
-
-  // PWA Install
-  pwa: {
-    title: 'Panduan Instalasi Aplikasi',
-    description: 'Instal POS Sembako sebagai aplikasi di perangkat Anda',
-    installNow: 'Instal Sekarang',
-    installing: 'Menginstal...',
-    installSuccess: 'Aplikasi berhasil diinstal',
-    installFailed: 'Instalasi gagal',
-    alreadyInstalled: 'Aplikasi sudah terinstal',
-    androidTitle: 'Android (Chrome)',
-    androidSteps: [
-      'Buka menu Chrome (tiga titik di pojok kanan atas)',
-      'Ketuk "Tambahkan ke layar utama" atau "Instal aplikasi"',
-      'Ikuti petunjuk untuk menambahkan ikon aplikasi ke layar utama Anda',
-      'Aplikasi sekarang dapat diakses dari layar utama seperti aplikasi native',
-    ],
-    iosTitle: 'iOS (Safari)',
-    iosSteps: [
-      'Ketuk tombol Bagikan (kotak dengan panah ke atas) di bagian bawah layar',
-      'Gulir ke bawah dan ketuk "Tambahkan ke Layar Utama"',
-      'Ketuk "Tambah" di pojok kanan atas',
-      'Aplikasi sekarang akan muncul di layar utama Anda',
-    ],
-    desktopTitle: 'Desktop (Chrome/Edge)',
-    desktopSteps: [
-      'Cari ikon instal di bilah alamat (biasanya di sebelah kanan)',
-      'Klik ikon dan pilih "Instal"',
-      'Aplikasi akan terbuka di jendela terpisah',
-      'Anda dapat mengaksesnya dari menu Start atau Dock',
-    ],
-    troubleshooting: 'Pemecahan Masalah',
-    troubleshootingSteps: [
-      'Pastikan Anda menggunakan browser yang didukung (Chrome, Safari, Edge)',
-      'Periksa koneksi internet Anda',
-      'Coba muat ulang halaman dan coba lagi',
-      'Jika masalah berlanjut, hubungi dukungan',
-    ],
-    benefits: 'Manfaat Instalasi',
-    benefitsList: [
-      'Akses cepat dari layar utama',
-      'Bekerja offline dengan sinkronisasi otomatis',
-      'Pengalaman layar penuh tanpa bilah browser',
-      'Notifikasi push (jika diaktifkan)',
-    ],
+  // Camera/Barcode
+  camera: {
+    failedAccess: 'Gagal mengakses kamera. Silakan berikan izin kamera.',
+    scanBarcode: 'Pindai Barcode',
+    enterManually: 'Masukkan Barcode Secara Manual',
+    positionBarcode: 'Posisikan barcode di dalam tampilan kamera atau masukkan secara manual',
+    cameraNotSupported: 'Kamera tidak didukung',
+    startCamera: 'Mulai Kamera',
+    stopCamera: 'Hentikan Kamera',
+    switchCamera: 'Ganti Kamera',
+    takePhoto: 'Ambil Foto',
   },
 
   // Footer
   footer: {
-    allRightsReserved: 'Hak Cipta Dilindungi',
+    allRightsReserved: 'Semua hak dilindungi',
     builtWith: 'Dibuat dengan',
     using: 'menggunakan',
   },
-
-  // Admin Re-auth
-  adminReauth: {
-    title: 'Otorisasi Admin Diperlukan',
-    description: 'Tindakan ini memerlukan otorisasi admin. Silakan autentikasi untuk melanjutkan.',
-    authenticate: 'Autentikasi',
-    authenticating: 'Mengautentikasi...',
-  },
 };
-
-export type TranslationKey = typeof id;

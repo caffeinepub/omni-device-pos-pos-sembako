@@ -54,51 +54,51 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   const NavLinks = () => (
     <>
-      <Link to="/" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+      <Link to="/" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
         <ShoppingCart className="h-5 w-5" />
         <span>{t('nav.pos')}</span>
       </Link>
-      <Link to="/reports" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+      <Link to="/reports" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
         <BarChart3 className="h-5 w-5" />
         <span>{t('nav.reports')}</span>
       </Link>
-      <Link to="/sync" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+      <Link to="/sync" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
         <RefreshCw className="h-5 w-5" />
         <span>{t('nav.syncStatus')}</span>
       </Link>
       {isAdmin && (
         <>
-          <Link to="/catalog" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+          <Link to="/catalog" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
             <Package className="h-5 w-5" />
             <span>{t('nav.catalog')}</span>
           </Link>
-          <Link to="/inventory" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+          <Link to="/inventory" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
             <Warehouse className="h-5 w-5" />
             <span>{t('nav.inventory')}</span>
           </Link>
-          <Link to="/receiving" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+          <Link to="/receiving" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
             <ShoppingBag className="h-5 w-5" />
             <span>{t('nav.receiving')}</span>
           </Link>
-          <Link to="/promotions" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+          <Link to="/promotions" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
             <Tag className="h-5 w-5" />
             <span>{t('nav.promotions')}</span>
           </Link>
-          <Link to="/payment-methods" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+          <Link to="/payment-methods" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
             <CreditCard className="h-5 w-5" />
             <span>{t('nav.paymentMethods')}</span>
           </Link>
-          <Link to="/users" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+          <Link to="/users" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
             <Users className="h-5 w-5" />
             <span>{t('nav.users')}</span>
           </Link>
-          <Link to="/catalog/csv" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+          <Link to="/catalog/csv" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
             <FileSpreadsheet className="h-5 w-5" />
             <span>{t('nav.csvImportExport')}</span>
           </Link>
         </>
       )}
-      <Link to="/return" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-accent transition-colors">
+      <Link to="/return" className="flex items-center gap-2 px-4 py-2 rounded-xl hover:bg-primary/10 transition-all duration-200 glass-button">
         <Undo2 className="h-5 w-5" />
         <span>{t('nav.returns')}</span>
       </Link>
@@ -107,23 +107,23 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full glass-header">
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-4">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button variant="ghost" size="icon" className="md:hidden glass-button rounded-xl">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-64">
+              <SheetContent side="left" className="w-64 glass-elevated">
                 <nav className="flex flex-col gap-2 mt-8">
                   <NavLinks />
                 </nav>
               </SheetContent>
             </Sheet>
             <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-              <img src="/assets/generated/pos-logo.dim_512x512.png" alt="POS" className="h-8 w-8" />
+              <img src="/assets/generated/pos-logo.dim_512x512.png" alt="POS" className="h-8 w-8 drop-shadow-lg" />
               <span className="hidden sm:inline">POS Sembako</span>
             </Link>
           </div>
@@ -137,6 +137,7 @@ export function AppLayout({ children }: AppLayoutProps) {
               variant="ghost"
               size="icon"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="glass-button rounded-xl"
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
@@ -144,11 +145,11 @@ export function AppLayout({ children }: AppLayoutProps) {
             {identity && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="glass-button rounded-xl">
                     <Settings className="h-5 w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="glass-elevated">
                   <DropdownMenuLabel>
                     {userProfile?.name || t('auth.name')}
                     <div className="text-xs text-muted-foreground font-normal">
@@ -178,7 +179,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         {children}
       </main>
 
-      <footer className="border-t py-6 px-4">
+      <footer className="glass-header py-6 px-4">
         <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div>© {new Date().getFullYear()} POS Sembako. {t('footer.allRightsReserved')}.</div>
           <div className="flex items-center gap-1">

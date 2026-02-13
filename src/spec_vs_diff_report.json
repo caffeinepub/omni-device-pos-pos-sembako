@@ -1,102 +1,67 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T04:46:04.461Z",
-  "summary": "Diff implements major parts of the request: introduces an Indonesian i18n string table + helper, updates multiple screens to use translations, switches product CSV import/export and a report CSV export utility to semicolon delimiters, adds a PWA install guide page/route and an install-prompt hook, and refreshes the Tailwind theme palette. However, based on the diff summary alone there isn’t enough evidence that translation is complete across the entire app (incl. receipts/print UI), that Reports export is actually wired to the new semicolon exporter, that the Category dropdown/zero-category CTA are fully implemented in the product form UI, and that a full admin non-functional-controls audit (REQ-20) was done. There are also a couple additions not explicitly requested (IdleLock feature and a migration module that appears to do nothing).",
+  "generatedAt": "2026-02-13T05:34:23.577Z",
+  "summary": "Diff implements a glassmorphism-style token layer and applies Indonesian i18n in several updated UI components, plus live checkout remaining/change math. However, the required background image asset is not added, stock decrement logic is not variant-safe and is applied before transaction creation, and backend atomic transaction+stock decrement support is not evidenced in the provided backend diff.",
   "missing_requirements": [
     {
-      "id": "REQ-17",
-      "requirement": "Translate all user-facing UI text across the entire POS application (including admin modules, POS/checkout, reports, sync status, returns/refund/void flows, and receipt/print preview UI) to Bahasa Indonesia with no remaining hardcoded English UI strings.",
-      "reason": "While many components were updated to use t(...) and a new Indonesian string table was added, the diff summary does not provide evidence that *all* pages/flows and the receipt/print preview UI were translated end-to-end (files are truncated and not all feature UIs are shown).",
+      "id": "REQ-27",
+      "requirement": "Add backend support for creating a completed transaction that also updates inventory atomically via a single Motoko method with authorization.",
+      "reason": "backend/main.mo is modified but the diff excerpt only shows type/state definitions; no new shared method for atomic transaction creation + stock decrement (with auth checks and trap on invalid decrements) is visible in the provided truncated evidence.",
       "evidence": [
-        "frontend/src/i18n/strings.id.ts",
-        "frontend/src/i18n/t.ts",
-        "frontend/src/features/auth/AuthGate.tsx",
-        "frontend/src/features/auth/ProfileSetupDialog.tsx",
-        "frontend/src/features/catalog/CatalogPage.tsx (truncated)",
-        "frontend-file-summaries.txt (truncated list; not verifiable for complete coverage)"
+        "backend/main.mo (truncated)"
       ]
     },
     {
-      "id": "REQ-18",
-      "requirement": "Update Reports CSV export to use semicolon (;) delimiters (and ensure product CSV import/export + on-screen instructions use ';' with Indonesian errors).",
-      "reason": "Product CSV import/export and the on-screen example show semicolons, and a new semicolon-based report export utility exists, but the diff summary does not show that ReportsPage actually uses the updated report export utility (wiring not visible).",
+      "id": "REQ-26",
+      "requirement": "Automatic stock reduction on completed sale must decrement on-hand inventory per (productId, variantId), persist offline, reflect immediately, and error (in Bahasa Indonesia) if any item cannot be updated.",
+      "reason": "CheckoutPage decrements a single `product.stock` by matching only `product.id` (ignores `variantId`), performs the stock update before transaction creation (so a later transaction failure could leave stock decremented), and does not show handling for missing product/variant entries beyond a null products check. This does not meet the per-variant and consistency guarantees in AC.",
       "evidence": [
-        "frontend/src/utils/csvExport.ts",
-        "frontend/src/utils/csvParse.ts (truncated)",
-        "frontend/src/features/catalog/ProductCsvPage.tsx (truncated)",
-        "frontend/src/App.tsx (ReportsPage is routed but not shown)"
+        "frontend/src/features/checkout/CheckoutPage.tsx (truncated)",
+        "frontend/src/features/inventory/InventoryPage.tsx (truncated)"
       ]
     },
     {
-      "id": "REQ-19",
-      "requirement": "Fix Add/Edit Product Category dropdown so it is populated/selectable; add admin UI to create/manage categories (name + active); persist to offline master data and queue for sync; newly created categories appear immediately in product form without reload; show Indonesian CTA if zero categories.",
-      "reason": "CatalogPage shows category creation saving to offline master data and queueForSync, but the diff summary is truncated before showing the actual product form Category dropdown rendering, selection behavior, and the explicit zero-categories CTA.",
+      "id": "REQ-23",
+      "requirement": "Add required abstract colorful glass gradient background image asset (app-bg-glass.dim_1920x1080.png).",
+      "reason": "CSS references `/assets/generated/app-bg-glass.dim_1920x1080.png`, but the diff shows no added files, so the required image asset is not provided in this change set.",
       "evidence": [
-        "frontend/src/features/catalog/CatalogPage.tsx (truncated)",
-        "frontend/src/i18n/strings.id.ts (contains category-related strings like noCategoriesAvailable/createCategoryFirst)"
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "requirement": "Audit admin pages for non-functional controls and either wire them end-to-end using offline master data + sync queue, or disable with a clear Indonesian explanation.",
-      "reason": "The diff summary shows work on catalog categories and CSV flows, but does not show a broad audit across admin modules or any pattern of disabling/wiring previously non-functional controls across all admin pages.",
-      "evidence": [
-        "frontend/src/features/catalog/CatalogPage.tsx (truncated)",
-        "frontend-file-summaries.txt (does not provide concrete diff evidence of auditing/disabling across all admin pages)"
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "requirement": "Add an in-app PWA installation guide discoverable from the UI, with step-by-step Android/iOS/Desktop instructions, troubleshooting, and integration with install prompt handling (Bahasa Indonesia).",
-      "reason": "A PWA install guide page and route were added and it uses useInstallPrompt, but the diff summary does not show a navigation/settings entry that links to it (AppLayout snippet doesn’t include the link; file is truncated). Also, the guide file is truncated before confirming the troubleshooting section content.",
-      "evidence": [
-        "frontend/src/features/pwa/PwaInstallGuidePage.tsx (truncated)",
-        "frontend/src/App.tsx (route /pwa-install)",
-        "frontend/src/components/AppLayout.tsx (truncated; nav link not visible in provided portion)",
-        "frontend/src/pwa/useInstallPrompt.ts"
+        "frontend/src/index.css (truncated)",
+        "File diff summary: Added files: none"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Added an idle session lock UI/flow (IdleLock) with re-authentication prompt.",
-      "reason": "The BuildRequest did not ask for adding/changing session idle-lock behavior; it focuses on localization, CSV delimiter, catalog categories, PWA install guide, admin control audit, and theme refresh.",
+      "description": "Changed CSV import/export format to use semicolon delimiter and added Indonesian error messaging in CSV utilities.",
+      "reason": "BuildRequest does not request CSV delimiter changes; this is a functional behavior change beyond the specified UI refresh/localization completion/checkout+stock fixes.",
       "evidence": [
-        "frontend/src/features/auth/IdleLock.tsx",
-        "frontend/src/App.tsx (IdleLock wrapped around layout)"
+        "frontend-file-summaries.txt (csvExport.ts, csvParse.ts)"
       ]
     },
     {
-      "description": "Introduced backend migration module wiring even though the migration implementation appears to be a no-op.",
-      "reason": "Constraint says only add backend/migration.mo if a state migration is truly required. The added migration.run returns the old state unchanged, suggesting it may not be necessary (and the diff summary does not justify a required state migration).",
+      "description": "PWA manifest theme color update.",
+      "reason": "Not requested by any requirement; BuildRequest focuses on theme refresh, Indonesian localization, checkout calculations, and stock decrement/atomic backend support.",
       "evidence": [
-        "backend/migration.mo",
-        "backend/main.mo (with migration = Migration.run)"
+        "frontend-file-summaries.txt (frontend/public/manifest.webmanifest)"
       ]
     }
   ],
   "confidence": 0.64,
   "changed_files": [
     "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/public/manifest.webmanifest",
-    "frontend/src/App.tsx",
     "frontend/src/components/AppLayout.tsx",
-    "frontend/src/components/OfflineIndicator.tsx",
-    "frontend/src/features/auth/AuthGate.tsx",
-    "frontend/src/features/auth/IdleLock.tsx",
-    "frontend/src/features/auth/ProfileSetupDialog.tsx",
-    "frontend/src/features/catalog/CatalogPage.tsx",
-    "frontend/src/features/catalog/ProductCsvPage.tsx",
-    "frontend/src/features/pwa/PwaInstallGuidePage.tsx",
+    "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
+    "frontend/src/features/checkout/CheckoutPage.tsx",
+    "frontend/src/features/checkout/paymentValidation.ts",
+    "frontend/src/features/inventory/InventoryPage.tsx",
+    "frontend/src/features/pos/PosPage.tsx",
+    "frontend/src/features/pos/cartStore.ts",
+    "frontend/src/features/reports/ReportsPage.tsx",
     "frontend/src/i18n/strings.id.ts",
-    "frontend/src/i18n/t.ts",
     "frontend/src/index.css",
-    "frontend/src/pwa/useInstallPrompt.ts",
-    "frontend/src/utils/csvExport.ts",
-    "frontend/src/utils/csvParse.ts",
+    "frontend/tailwind.config.js",
     "project_state.json"
   ]
 }

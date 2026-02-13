@@ -104,7 +104,7 @@ export const useCartStore = create<CartStore>()(
       },
 
       setCartDiscount: (discount) => {
-        set({ cartDiscount: discount });
+        set({ cartDiscount: Math.max(0, discount) });
       },
 
       setTaxEnabled: (enabled) => {
@@ -112,20 +112,22 @@ export const useCartStore = create<CartStore>()(
       },
 
       get cartSubtotal() {
-        return get().cart.reduce(
+        const subtotal = get().cart.reduce(
           (sum, item) => sum + item.price * item.quantity - item.discount,
           0
         );
+        return Math.max(0, subtotal);
       },
 
       get cartTax() {
         if (!get().taxEnabled) return 0;
         const subtotal = get().cartSubtotal - get().cartDiscount;
-        return Math.round(subtotal * 0.1);
+        return Math.max(0, Math.round(subtotal * 0.1));
       },
 
       get cartTotal() {
-        return get().cartSubtotal - get().cartDiscount + get().cartTax;
+        const total = get().cartSubtotal - get().cartDiscount + get().cartTax;
+        return Math.max(0, total);
       },
     }),
     {

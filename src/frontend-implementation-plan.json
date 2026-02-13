@@ -1,320 +1,174 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Bahasa Indonesia localization, CSV semicolon delimiter, category management fix, PWA install guide, and theme refresh (frontend-only)",
+  "title": "Glassmorphism/3D theme refresh, full Bahasa Indonesia UI, checkout calculation fixes, and auto stock decrement (frontend)",
   "requirements": [
     {
-      "id": "REQ-17",
-      "summary": "Localize all user-facing UI strings across POS and admin modules to Bahasa Indonesia (including toasts, validation, dialogs, navigation, and receipt UI).",
+      "id": "REQ-23",
+      "summary": "Apply a consistent glassmorphism + subtle 3D visual theme across all app routes and surfaces with readable light/dark mode support.",
       "acceptanceCriteria": [
-        "No hardcoded English UI strings remain in the app UI (excluding data values such as product names) after the change.",
-        "All toasts and validation messages shown to the user are in Bahasa Indonesia.",
-        "Receipt preview/print UI labels and any receipt annotations are in Bahasa Indonesia.",
-        "Navigation (sidebar/sheet) items are in Bahasa Indonesia and remain consistent across mobile/desktop layouts."
+        "All major surfaces (App layout shell, cards, tables, dialogs/sheets, primary/secondary buttons, inputs) reflect a consistent glassmorphism/3D style (blurred/translucent surfaces, layered depth via shadows/highlights) in both light and dark mode.",
+        "Contrast remains accessible: text and icons remain clearly legible on glass surfaces; no critical UI becomes hard to read in either theme.",
+        "The theme is applied consistently across all routes defined in the app (POS, Checkout, Catalog, Inventory, Receiving, Promotions, Payment Methods, Users, CSV, Reports, Sync Status, Returns, Transaction details)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/i18n/strings.id.ts",
+          "path": "frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png",
           "operation": "create",
-          "description": "Add a centralized Bahasa Indonesia string map (navigation labels, page titles, buttons, form labels/placeholders, empty states, toast messages, dialogs, and common error messages) to eliminate hardcoded English across the app."
+          "description": "Add the required generated background asset at frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png and ensure it is referenced by the app shell as the global glass gradient backdrop."
         },
-        {
-          "path": "frontend/src/i18n/t.ts",
-          "operation": "create",
-          "description": "Add a small translation helper (e.g., t(key)) used by pages/components to pull Indonesian strings from the centralized map."
-        },
-        {
-          "path": "frontend/src/components/AppLayout.tsx",
-          "operation": "modify",
-          "description": "Replace hardcoded navigation labels, user menu labels, and footer strings with Bahasa Indonesia using the new i18n helper; ensure mobile sheet and desktop nav stay consistent."
-        },
-        {
-          "path": "frontend/src/features/auth/AuthGate.tsx",
-          "operation": "modify",
-          "description": "Translate login screen strings (welcome text, sign-in button, loading states) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/auth/ProfileSetupDialog.tsx",
-          "operation": "modify",
-          "description": "Translate profile setup dialog title/description/labels/placeholders/buttons and validation/toast messages to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/auth/IdleLock.tsx",
-          "operation": "modify",
-          "description": "Translate idle lock dialog title/description/button and loading state to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/auth/AdminReauthDialog.tsx",
-          "operation": "modify",
-          "description": "Translate admin re-auth dialog strings (title, description, buttons, loading text) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/catalog/CatalogPage.tsx",
-          "operation": "modify",
-          "description": "Translate Catalog page text (titles, descriptions, form labels, table headers, status badges, actions, dialog titles, and toasts/errors) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/catalog/ProductCsvPage.tsx",
-          "operation": "modify",
-          "description": "Translate CSV Import/Export page titles, descriptions, button labels, error headings, empty states, and toast messages to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/reports/ReportsPage.tsx",
-          "operation": "modify",
-          "description": "Translate Reports page titles, filters, metric labels, table headers, and export toasts/errors to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
-          "operation": "modify",
-          "description": "Translate Checkout flow UI (empty cart state, order summary, payment labels, validation/toasts, and action buttons) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/pos/PosPage.tsx",
-          "operation": "modify",
-          "description": "Translate POS screen UI (search placeholder, scan sheet title, cart labels/empty state, tax/discount labels if present, and barcode scan toasts/errors) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/transactions/TransactionDetailsPage.tsx",
-          "operation": "modify",
-          "description": "Translate transaction details UI (labels, action buttons, sections, and any toasts) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/void/VoidTransactionDialog.tsx",
-          "operation": "modify",
-          "description": "Translate void flow dialog strings (labels, validation, confirmation, errors) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/returns/ReturnFlowPage.tsx",
-          "operation": "modify",
-          "description": "Translate returns/lookup UI strings and any placeholder messaging to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/sync/SyncStatusPage.tsx",
-          "operation": "modify",
-          "description": "Translate sync status UI strings (queue counts, actions, statuses, empty states, errors) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/inventory/InventoryPage.tsx",
-          "operation": "modify",
-          "description": "Translate inventory UI strings (titles, labels, actions, tables, validation/toasts) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/inventory/ReceivingPage.tsx",
-          "operation": "modify",
-          "description": "Translate receiving UI strings (titles, form labels, actions, validation/toasts) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/promotions/PromotionsPage.tsx",
-          "operation": "modify",
-          "description": "Translate promotions UI strings (titles, actions, form labels, validation/toasts) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/payments/PaymentMethodsPage.tsx",
-          "operation": "modify",
-          "description": "Translate payment methods UI strings (titles, actions, toggles, dialog labels, validation/toasts) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/admin/UsersPage.tsx",
-          "operation": "modify",
-          "description": "Translate Users/Admin page text (titles, descriptions, role info, helper text) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/admin/SampleDataLoaderCard.tsx",
-          "operation": "modify",
-          "description": "Translate sample data loader UI (card title/description, dialog title/description, buttons, loading/toasts) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/components/OfflineIndicator.tsx",
-          "operation": "modify",
-          "description": "Translate offline indicator messaging and any queued-transaction explanations to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/receipts/PrintReceiptDialog.tsx",
-          "operation": "modify",
-          "description": "Translate print receipt dialog UI (title, receipt width labels, print button text) to Bahasa Indonesia using the i18n helper."
-        },
-        {
-          "path": "frontend/src/features/receipts/ReceiptTemplate.tsx",
-          "operation": "modify",
-          "description": "Translate receipt template labels (e.g., Date, Subtotal, Discount, Tax, Payment, Method) and footer thank-you text to Bahasa Indonesia using the i18n helper while keeping data values unchanged."
-        }
-      ]
-    },
-    {
-      "id": "REQ-18",
-      "summary": "Switch all CSV export/import to semicolon (;) delimiter for reports and products, including updating on-screen CSV examples and Indonesian error messages.",
-      "acceptanceCriteria": [
-        "Reports CSV export downloads a .csv file where columns are separated by ';'.",
-        "Product CSV export downloads a .csv file where columns are separated by ';'.",
-        "Product CSV import correctly parses ';' delimited files and rejects malformed rows with clear (Indonesian) error messages.",
-        "The CSV format help text and example shown in the CSV Import/Export page uses ';' as the delimiter."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/csvExport.ts",
-          "operation": "modify",
-          "description": "Update report CSV generation to use semicolon (;) delimiter, with proper CSV escaping for values containing ';', quotes, or newlines, and keep file download behavior unchanged."
-        },
-        {
-          "path": "frontend/src/utils/csvParse.ts",
-          "operation": "modify",
-          "description": "Update product CSV export to use semicolon (;) delimiter and update import parsing logic to parse ';' delimited rows robustly (including quoted values); return clear Bahasa Indonesia errors for malformed rows/columns."
-        },
-        {
-          "path": "frontend/src/features/reports/ReportsPage.tsx",
-          "operation": "modify",
-          "description": "Ensure the Reports export action continues to call the CSV export utility and that any success/failure toast messages are in Bahasa Indonesia (and consistent with the updated delimiter behavior)."
-        },
-        {
-          "path": "frontend/src/features/catalog/ProductCsvPage.tsx",
-          "operation": "modify",
-          "description": "Update CSV format help text and examples displayed on-screen to use semicolon (;) delimiter; ensure import/export toasts and error summaries are in Bahasa Indonesia."
-        }
-      ]
-    },
-    {
-      "id": "REQ-19",
-      "summary": "Fix Catalog product form category selection and add admin UI to create/manage product categories (name + active) with immediate offline availability.",
-      "acceptanceCriteria": [
-        "In the Add Product / Edit Product dialog, the Category dropdown shows the current category list and selection works.",
-        "Admins can create a new category via the UI; after saving, the new category appears in the category dropdown in the product form immediately.",
-        "Category data is saved to the offline master data cache and queued for sync using the existing offline sync mechanism.",
-        "If there are zero categories, the UI shows a clear (Indonesian) call-to-action to create a category rather than an empty dropdown."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/catalog/CatalogPage.tsx",
-          "operation": "modify",
-          "description": "Fix category dropdown behavior by ensuring categories are loaded from offline master data, selectable, and validated; if no categories exist, show an Indonesian call-to-action and direct path to create a category instead of an empty dropdown."
-        },
-        {
-          "path": "frontend/src/features/catalog/CatalogPage.tsx",
-          "operation": "modify",
-          "description": "Add an in-page admin category management UI within Catalog (create at minimum: name + active flag; optionally list existing categories with active status) that saves to offline master data and queues for sync; after save, refresh categories so the new category is immediately available in the product form without reload."
-        },
-        {
-          "path": "frontend/src/offline/masterDataCache.ts",
-          "operation": "modify",
-          "description": "If needed, ensure the master data cache hook supports refetching categories after local writes so Catalog can immediately reflect new categories (no page reload required)."
-        },
-        {
-          "path": "frontend/src/offline/storage.ts",
-          "operation": "modify",
-          "description": "If needed, ensure existing offline master data write + sync-queue helpers support category create operations consistently from the UI (capability-only changes limited to frontend storage layer)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-20",
-      "summary": "Audit admin pages for non-functional controls; wire to existing offline/sync flows where possible or disable with clear Indonesian explanations.",
-      "acceptanceCriteria": [
-        "All admin pages reachable from navigation have primary actions that either work end-to-end or are explicitly disabled with an Indonesian explanation.",
-        "No admin workflow is blocked by a clickable UI control that silently does nothing.",
-        "Any remaining not-yet-implemented flows are clearly marked in Indonesian (e.g., disabled state + short message) rather than showing misleading success/info toasts."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/catalog/CatalogPage.tsx",
-          "operation": "modify",
-          "description": "Audit Catalog primary actions (add/edit product, save, category selection/creation) to ensure no clickable control silently does nothing; wire missing behavior to existing offline master data + sync queue pattern or disable with an Indonesian explanation."
-        },
-        {
-          "path": "frontend/src/features/admin/UsersPage.tsx",
-          "operation": "modify",
-          "description": "Audit admin Users page and related actions for any non-functional controls; ensure visible actions either work or are disabled with Indonesian explanation text."
-        },
-        {
-          "path": "frontend/src/features/admin/SampleDataLoaderCard.tsx",
-          "operation": "modify",
-          "description": "Ensure the sample data loader end-to-end action shows correct Indonesian confirmations, loading states, and errors; confirm button states prevent no-op clicks."
-        },
-        {
-          "path": "frontend/src/features/promotions/PromotionsPage.tsx",
-          "operation": "modify",
-          "description": "Audit Promotions admin actions; if any controls are placeholders, disable them with an Indonesian note, otherwise wire to the existing offline master data + sync queue pattern already used by the module."
-        },
-        {
-          "path": "frontend/src/features/payments/PaymentMethodsPage.tsx",
-          "operation": "modify",
-          "description": "Audit Payment Methods admin actions; ensure add/toggle flows function end-to-end via offline master data + sync queue, or disable clearly in Indonesian if not supported."
-        },
-        {
-          "path": "frontend/src/features/inventory/InventoryPage.tsx",
-          "operation": "modify",
-          "description": "Audit Inventory admin actions; ensure adjustments and primary controls work end-to-end via existing offline/sync patterns, or disable clearly in Indonesian if not supported."
-        },
-        {
-          "path": "frontend/src/features/inventory/ReceivingPage.tsx",
-          "operation": "modify",
-          "description": "Audit Receiving workflow actions; ensure primary controls work end-to-end via existing offline/sync patterns, or disable clearly in Indonesian if any parts are not implemented."
-        },
-        {
-          "path": "frontend/src/features/returns/ReturnFlowPage.tsx",
-          "operation": "modify",
-          "description": "Replace any clickable placeholder behavior in the Returns flow with either a working flow (if supported locally) or a disabled control and clear Indonesian explanation so users are not confused."
-        }
-      ]
-    },
-    {
-      "id": "REQ-21",
-      "summary": "Add an in-app PWA installation guide (Bahasa Indonesia) discoverable from the UI, integrating with the existing install prompt handling when available.",
-      "acceptanceCriteria": [
-        "There is an easily discoverable navigation entry or settings entry that opens an installation guide screen/dialog.",
-        "The guide includes separate, step-by-step instructions for Android, iOS, and Desktop.",
-        "Where supported, the UI integrates with the existing install prompt handling so users can trigger installation from the app.",
-        "All guide and troubleshooting text is in Bahasa Indonesia."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/pwa/PwaInstallGuidePage.tsx",
-          "operation": "create",
-          "description": "Create an installation guide screen in Bahasa Indonesia covering Android (Chrome), iOS (Safari), and Desktop (Chrome/Edge), plus troubleshooting; integrate with the existing useInstallPrompt hook to show an in-app Install button when canInstall is true."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire the new PWA installation guide screen into the router as a navigable route (no orphan page)."
-        },
-        {
-          "path": "frontend/src/components/AppLayout.tsx",
-          "operation": "modify",
-          "description": "Add a discoverable entry to open the PWA installation guide (preferably inside the settings dropdown and/or navigation), with label in Bahasa Indonesia."
-        },
-        {
-          "path": "frontend/src/pwa/useInstallPrompt.ts",
-          "operation": "modify",
-          "description": "If needed, improve install state handling for the guide (e.g., reflect installed state more reliably) while keeping the existing prompt capture behavior intact."
-        }
-      ]
-    },
-    {
-      "id": "REQ-22",
-      "summary": "Refresh the theme to be more colorful while keeping consistent, readable styling across modules with light/dark mode support.",
-      "acceptanceCriteria": [
-        "The app uses a noticeably more colorful accent/secondary palette than before, applied consistently across major components.",
-        "Light and dark mode both remain usable with sufficient contrast for POS usage.",
-        "No module looks visually \"unstyled\" relative to others (consistent spacing, typography, and component variants)."
-      ],
-      "file_operations": [
         {
           "path": "frontend/src/index.css",
           "operation": "modify",
-          "description": "Adjust global design tokens (primary/secondary/accent/chart colors and related foregrounds) to a more colorful palette while maintaining contrast in both light and dark modes; ensure print styles remain unaffected."
+          "description": "Introduce app-level glass/3D theme tokens and utility classes (e.g., reusable glass surface, elevated surface, and readable-on-glass text treatments) implemented via existing Tailwind/CSS variables and dark mode variables; do not modify shadcn ui components under frontend/src/components/ui."
         },
         {
           "path": "frontend/tailwind.config.js",
           "operation": "modify",
-          "description": "If needed to support the refreshed palette, refine Tailwind theme token mapping (still based on CSS variables) so components consistently pick up the updated colors across the app."
-        },
-        {
-          "path": "frontend/public/manifest.webmanifest",
-          "operation": "modify",
-          "description": "Update PWA theme metadata (e.g., theme_color/background_color) to align with the refreshed brand palette while keeping existing generated icons unchanged."
+          "description": "Adjust Tailwind theme extensions to support the glass/3D design consistently (e.g., additional shadows, border opacity presets, backdrop blur utilities, and color token mapping for light/dark)."
         },
         {
           "path": "frontend/src/components/AppLayout.tsx",
           "operation": "modify",
-          "description": "Ensure navigation/header styling leverages the refreshed accent/secondary tokens for a more colorful but consistent look across mobile/desktop, without modifying any files under frontend/src/components/ui."
+          "description": "Apply the global glassmorphism layout shell: set the app background to use frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png, refine header/footer/main container surfaces for glass translucency + subtle 3D depth, and ensure nav links, sheets, and dropdowns remain readable in both themes."
+        },
+        {
+          "path": "frontend/src/features/pos/PosPage.tsx",
+          "operation": "modify",
+          "description": "Update POS page surface composition (cards/sheets/cart panel) to use the new glass/3D wrapper classes consistently and ensure hover/active states remain legible in light/dark."
+        },
+        {
+          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
+          "operation": "modify",
+          "description": "Update Checkout page surface composition (summary/payment cards, totals rows, inputs/buttons) to match the glass/3D theme while maintaining clear numeric readability in light/dark."
+        },
+        {
+          "path": "frontend/src/features/inventory/InventoryPage.tsx",
+          "operation": "modify",
+          "description": "Update Inventory page (tables, dialog, alerts, badges) to use the glass/3D surface styles consistently and keep status colors readable on translucent backgrounds."
+        },
+        {
+          "path": "frontend/src/features/catalog/CatalogPage.tsx",
+          "operation": "modify",
+          "description": "Update Catalog page (dialogs, forms, tables, alerts) to adopt the glass/3D style via composition and className usage without changing shadcn ui internals."
+        },
+        {
+          "path": "frontend/src/features/reports/ReportsPage.tsx",
+          "operation": "modify",
+          "description": "Update Reports page cards/tables/filters to match the global glassmorphism/3D theme and ensure charts/summary icons/text remain readable on glass."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Ensure the theme refresh is applied uniformly across the router shell (root layout) and that global overlays/toasts remain readable on top of glass backgrounds."
+        }
+      ]
+    },
+    {
+      "id": "REQ-24",
+      "summary": "Convert all remaining user-facing strings to Bahasa Indonesia using the existing i18n helper and Indonesian strings file (no hardcoded English).",
+      "acceptanceCriteria": [
+        "No English user-facing strings remain in POS and Checkout flows (including toasts like “Added … to cart”, “Cart is empty”, “Product Search”, “Scan Barcode”, and checkout validation/toasts).",
+        "No English user-facing strings remain in admin modules and shared components that are currently visible (buttons, dialogs, navigation labels, empty states).",
+        "All changed text uses the existing i18n approach (the translation helper + strings file) rather than inline literals."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/i18n/strings.id.ts",
+          "operation": "modify",
+          "description": "Add/expand missing Indonesian translation keys needed to eliminate remaining English UI strings across POS/Checkout/Admin/Reports/Inventory flows (including validation errors, empty states, and toast messages)."
+        },
+        {
+          "path": "frontend/src/features/pos/PosPage.tsx",
+          "operation": "modify",
+          "description": "Replace hardcoded English strings (search headers/placeholders, tax/discount labels, cart empty text, button labels, active/inactive labels, barcode scan sheet title, and toast messages) with t(...) lookups from the existing i18n helper."
+        },
+        {
+          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
+          "operation": "modify",
+          "description": "Replace all hardcoded English strings (headings, labels, placeholders, empty state, button labels, Remaining/Change labels, and toast messages) with t(...) keys and ensure Checkout copy matches Indonesian terminology."
+        },
+        {
+          "path": "frontend/src/features/checkout/paymentValidation.ts",
+          "operation": "modify",
+          "description": "Return i18n-driven error messaging (e.g., via i18n keys or a small mapper) so Checkout validation/toast output is fully Bahasa Indonesia and consistent with the existing translation approach."
+        },
+        {
+          "path": "frontend/src/features/inventory/InventoryPage.tsx",
+          "operation": "modify",
+          "description": "Replace English titles/descriptions/table headers/dialog strings/toasts (e.g., low stock alert, adjust stock, reason placeholders, success/failure) with t(...) lookups."
+        },
+        {
+          "path": "frontend/src/features/reports/ReportsPage.tsx",
+          "operation": "modify",
+          "description": "Replace English labels/toasts (e.g., export success/failure, filter labels, headings) with t(...) lookups using Indonesian strings."
+        },
+        {
+          "path": "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
+          "operation": "modify",
+          "description": "Ensure camera/barcode scanning UI and error states are fully Bahasa Indonesia using t(...). Use the selected component camera (camera/useCamera hook) for camera messaging consistency; Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/AppLayout.tsx",
+          "operation": "modify",
+          "description": "Audit and replace any remaining visible English strings in the layout shell (branding text, footer copy, menu items) with t(...) keys, keeping navigation labels consistent with strings.id.ts."
+        }
+      ]
+    },
+    {
+      "id": "REQ-25",
+      "summary": "Rework Checkout totals and payment remaining/change to be computed from the live cart total and update immediately as amounts are entered.",
+      "acceptanceCriteria": [
+        "Checkout displays the correct Total that matches the POS cart’s computed total and updates immediately when cart contents/discounts/tax change (no stale/empty totals).",
+        "As the cashier enters an amount for the selected payment method, the UI shows updated Remaining and, when overpaid, Change due immediately (without requiring the user to add the payment first).",
+        "Checkout prevents completing the transaction until the amount due is fully covered (remaining <= 0), and all validation/toast messages are in Bahasa Indonesia."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
+          "operation": "modify",
+          "description": "Compute and display checkout totals from the live Zustand cart store (including item discounts, cart discount, and tax toggle) and implement live Remaining/Change calculations that include the currently entered amount for the selected payment method (before it is added). Ensure the complete action stays disabled until the amount due is covered and all toasts/labels use t(...)."
+        },
+        {
+          "path": "frontend/src/features/checkout/paymentValidation.ts",
+          "operation": "modify",
+          "description": "Update validation logic to align with the new live-payment behavior (including handling a pending/typed amount consistently) and ensure returned messages are Bahasa Indonesia via the existing i18n approach."
+        },
+        {
+          "path": "frontend/src/features/pos/cartStore.ts",
+          "operation": "modify",
+          "description": "Harden and normalize cart total computation so it is always defined and consistent for Checkout (e.g., ensure discounts/tax never produce NaN/undefined totals), preserving the existing discount and tax semantics."
+        }
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "summary": "Automatically decrement local/offline on-hand stock after a successful checkout and reflect the updated inventory immediately.",
+      "acceptanceCriteria": [
+        "After completing a checkout, on-hand stock is reduced for each (productId, variantId) in the cart by the quantity sold.",
+        "The updated stock is persisted locally (offline master data) so the Inventory page shows the decreased quantities without requiring a reload.",
+        "If stock cannot be updated for any item (e.g., missing product/variant), the app shows a clear Bahasa Indonesia error and does not silently ignore the inconsistency."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/offline/storage.ts",
+          "operation": "modify",
+          "description": "Enhance the offline createTransaction flow to also apply an atomic local stock decrement across master data for each sold cart line item, persist the updated products master data, and throw a user-visible error when any product/variant is missing or cannot be updated."
+        },
+        {
+          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
+          "operation": "modify",
+          "description": "After a successful transaction, ensure master data queries for products are refreshed/invalidated so Inventory views reflect the decreased stock immediately; on failure to decrement stock, show a clear Bahasa Indonesia error (via t(...)) and do not proceed as if the transaction fully succeeded."
+        },
+        {
+          "path": "frontend/src/features/inventory/InventoryPage.tsx",
+          "operation": "modify",
+          "description": "Ensure Inventory renders stock based on the persisted offline master data updates and uses Bahasa Indonesia messaging for any stock-related error states surfaced after checkout."
+        },
+        {
+          "path": "frontend/src/i18n/strings.id.ts",
+          "operation": "modify",
+          "description": "Add Indonesian strings for stock-decrement success/failure states and inconsistency errors (e.g., missing product/variant during stock update) so the app never shows English when stock updates fail."
         }
       ]
     }
