@@ -1,4 +1,5 @@
 import { formatCurrency, formatDateTime } from '../../i18n/format';
+import { t } from '../../i18n/t';
 
 interface ReceiptTemplateProps {
   transaction: any;
@@ -11,18 +12,16 @@ export function ReceiptTemplate({ transaction, width }: ReceiptTemplateProps) {
   return (
     <div className={`${widthClass} mx-auto bg-white text-black p-4 font-mono text-xs print:p-0`}>
       <div className="text-center mb-4">
-        <h1 className="text-lg font-bold">POS SEMBAKO</h1>
-        <p className="text-xs">Jl. Contoh No. 123</p>
-        <p className="text-xs">Telp: 021-12345678</p>
+        <h1 className="text-lg font-bold">TOKO FADLI</h1>
       </div>
 
       <div className="border-t border-b border-dashed border-black py-2 mb-2">
         <div className="flex justify-between">
-          <span>No:</span>
+          <span>{t('receipt.receiptNumber')}:</span>
           <span>#{transaction.id}</span>
         </div>
         <div className="flex justify-between">
-          <span>Date:</span>
+          <span>{t('receipt.date')}:</span>
           <span>{formatDateTime(transaction.timestamp)}</span>
         </div>
       </div>
@@ -43,33 +42,33 @@ export function ReceiptTemplate({ transaction, width }: ReceiptTemplateProps) {
 
       <div className="border-t border-dashed border-black pt-2">
         <div className="flex justify-between mb-1">
-          <span>Subtotal:</span>
-          <span>{formatCurrency(transaction.subtotal || transaction.total)}</span>
+          <span>{t('receipt.subtotal')}:</span>
+          <span>{formatCurrency(transaction.subtotal)}</span>
         </div>
         {transaction.discount > 0 && (
           <div className="flex justify-between mb-1">
-            <span>Discount:</span>
+            <span>{t('receipt.discount')}:</span>
             <span>-{formatCurrency(transaction.discount)}</span>
           </div>
         )}
         {transaction.tax > 0 && (
           <div className="flex justify-between mb-1">
-            <span>Tax:</span>
+            <span>{t('receipt.tax')}:</span>
             <span>{formatCurrency(transaction.tax)}</span>
           </div>
         )}
         <div className="flex justify-between font-bold text-base border-t border-black pt-1">
-          <span>TOTAL:</span>
+          <span>{t('receipt.total')}:</span>
           <span>{formatCurrency(transaction.total)}</span>
         </div>
       </div>
 
       <div className="border-t border-dashed border-black mt-2 pt-2">
         <div className="text-xs">
-          <p className="font-semibold mb-1">Payment:</p>
+          <p className="font-semibold mb-1">{t('receipt.payment')}:</p>
           {transaction.payments.map((payment: any, index: number) => (
             <div key={index} className="flex justify-between">
-              <span>Method {index + 1}:</span>
+              <span>{t('receipt.method')} {index + 1}:</span>
               <span>{formatCurrency(payment.amount)}</span>
             </div>
           ))}
@@ -77,8 +76,8 @@ export function ReceiptTemplate({ transaction, width }: ReceiptTemplateProps) {
       </div>
 
       <div className="text-center mt-4 text-xs">
-        <p>Thank you for your purchase!</p>
-        <p>Please come again</p>
+        <p>{t('receipt.thankYou')}</p>
+        <p>{t('receipt.comeAgain')}</p>
       </div>
     </div>
   );

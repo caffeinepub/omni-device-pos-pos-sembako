@@ -1,13 +1,14 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "Build a modern installable PWA POS (single-outlet, offline-lite) for Indonesian UMKM retail/F&B using Caffeine stack: backend Motoko + frontend React/TypeScript. Add a full-app modern glass/3D UI theme refresh, translate all UI to 100% Bahasa Indonesia, and fix/rework checkout so totals, change (kembalian), and automatic stock reduction work correctly.",
+  "projectStateVersion": 11,
+  "summary": "Build a modern installable PWA POS (single-outlet, offline-lite) for Indonesian UMKM retail/F&B using Caffeine stack: backend Motoko + frontend React/TypeScript. Apply a full-app modern glass/3D UI theme refresh, translate all UI to 100% Bahasa Indonesia, fully fix/rework checkout (live totals + kembalian + correct calculations), ensure automatic stock reduction works, restore/refresh receipt printing, and apply full-store branding for “TOKO FADLI” across the app (PWA metadata, UI, receipts, reports).",
   "architectural_notes": [
     "Tech stack confirmed: backend Motoko + frontend React/TypeScript (no Laravel/PHP/MySQL/Vue).",
     "Distribution confirmed: installable PWA (not native APK).",
     "Core constraints: single-outlet + offline-lite with queued sync, retry/exponential backoff, and last-write-wins conflict resolution.",
     "CSV format decision: use semicolon (;) as delimiter for Indonesian-standard CSV exports and imports.",
-    "UI direction updated: apply a modern glassmorphism/3D-styled theme consistently across the entire app (not POS-only)."
+    "UI direction updated: apply a modern glassmorphism/3D-styled theme consistently across the entire app (not POS-only).",
+    "Branding decision: apply store/app name “TOKO FADLI” globally (PWA manifest/metadata, in-app UI, receipts, and reports), not header-only."
   ],
   "known_issues": [
     "Initial automated build attempt failed ('Our AI couldn't handle that request'); may require smaller/clearer build steps.",
@@ -16,10 +17,10 @@
     "Build/run pipeline instability: repeated internal LLM/Unexpected AI errors when attempting rebuild.",
     "Checkout flow bug: transaction total is not auto-populated/updated when products are added.",
     "Checkout flow bug: change due (kembalian) is not auto-calculated/visible after entering amount tendered.",
-    "Inventory bug: stock is not automatically reduced after a product is sold / sale finalized."
+    "Inventory bug: stock is not automatically reduced after a product is sold / sale finalized.",
+    "Receipt/struk printing feature is missing/removed in current build and must be restored (58mm/80mm)."
   ],
   "isFixRequest": true,
-  "imageRequirements": "## Required Images\n- Abstract colorful glass gradient background with soft bokeh highlights (app-bg-glass.dim_1920x1080.png)",
   "existing_features": [
     {
       "id": "feature-create-the-core-pos-sales-flow-ui-for-a-single-outlet-retail-f-b-pos-product-browse-search-add-to-cart-edit-quantity-and-per-item-notes-per-item-discount-and-per-transaction-discount-simple-tax-toggle-hold-resume-carts-and-finalize-sale",
@@ -228,6 +229,62 @@
         "REQ-26"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-apply-full-store-branding-for-toko-fadli-across-the-app-ui-shell-including-the-header-brand-name-footer-copyright-text-and-logo-alt-text-so-the-old-pos-sembako-branding-is-no-longer-visible-anywhere-in-the-main-layout",
+      "title": "Apply full-store branding for “TOKO FADLI” across the app UI shell, including the header brand name, footer copyright text, and logo alt text, so the old “POS Sembako” branding is no longer visible anywhere in the main layout.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-pwa-metadata-to-reflect-the-toko-fadli-brand-including-manifest-name-short-name-description-and-the-browser-document-title-where-applicable-so-installed-apps-and-browser-tabs-show-the-new-branding",
+      "title": "Update PWA metadata to reflect the “TOKO FADLI” brand, including manifest name/short_name/description and the browser document title where applicable, so installed apps and browser tabs show the new branding.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restore-and-refresh-receipt-printing-so-it-is-clearly-available-and-works-end-to-end-after-a-successful-checkout-present-an-option-to-print-a-receipt-58mm-80mm-and-ensure-the-receipt-template-is-updated-to-toko-fadli-branding-replacing-pos-sembako-pos-sembako",
+      "title": "Restore and refresh receipt printing so it is clearly available and works end-to-end: after a successful checkout, present an option to print a receipt (58mm/80mm), and ensure the receipt template is updated to “TOKO FADLI” branding (replacing “POS SEMBAKO/POS Sembako”).",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-remaining-hardcoded-english-receipt-transaction-ui-strings-in-receipt-printing-and-transaction-details-screens-by-routing-them-through-the-existing-i18n-helper-to-avoid-mixed-language-ui-and-ensure-consistency-with-the-rest-of-the-app",
+      "title": "Remove remaining hardcoded English receipt/transaction UI strings in receipt printing and transaction details screens by routing them through the existing i18n helper, to avoid mixed-language UI and ensure consistency with the rest of the app.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-checkout-order-summary-calculations-so-subtotal-tax-discount-and-total-are-always-computed-from-the-current-cart-contents-and-never-display-rp-0-when-the-cart-has-priced-items",
+      "title": "Fix the Checkout order summary calculations so Subtotal, Tax, Discount, and Total are always computed from the current cart contents and never display Rp 0 when the cart has priced items.",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-checkout-payment-calculations-so-remaining-and-change-are-always-correct-and-update-live-as-the-cashier-adds-removes-payments-and-edits-amounts",
+      "title": "Fix the Checkout payment calculations so Remaining and Change are always correct and update live as the cashier adds/removes payments and edits amounts.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-transaction-payload-created-during-checkout-stores-consistent-monetary-fields-subtotal-discount-tax-total-derived-from-the-cart-calculations-so-receipts-and-transaction-details-display-correct-amounts",
+      "title": "Ensure the transaction payload created during checkout stores consistent monetary fields (subtotal, discount, tax, total) derived from the cart calculations, so receipts and transaction details display correct amounts.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -328,10 +385,22 @@
         "REQ-27"
       ],
       "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Full branding update to “TOKO FADLI” across the entire app (app name/title, headers, PWA manifest/metadata, installable app display name, receipts/struk templates, reports/exports headers where applicable)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Restore missing receipt printing feature and refresh receipt templates (58mm/80mm) to match the new theme + “TOKO FADLI” branding",
+      "reqIds": [],
+      "status": "pending"
     }
   ],
   "gameProjectType": "none",
-  "projectName": "Omni-Device POS (POS Sembako)",
+  "projectName": "TOKO FADLI",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

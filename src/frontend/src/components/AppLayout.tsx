@@ -123,8 +123,8 @@ export function AppLayout({ children }: AppLayoutProps) {
               </SheetContent>
             </Sheet>
             <Link to="/" className="flex items-center gap-2 font-bold text-xl">
-              <img src="/assets/generated/pos-logo.dim_512x512.png" alt="POS" className="h-8 w-8 drop-shadow-lg" />
-              <span className="hidden sm:inline">POS Sembako</span>
+              <img src="/assets/generated/pos-logo-toko-fadli.dim_512x512.png" alt="TOKO FADLI" className="h-8 w-8 drop-shadow-lg" />
+              <span className="hidden sm:inline">TOKO FADLI</span>
             </Link>
           </div>
 
@@ -181,12 +181,12 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       <footer className="glass-header py-6 px-4">
         <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <div>© {new Date().getFullYear()} POS Sembako. {t('footer.allRightsReserved')}.</div>
+          <div>© {new Date().getFullYear()} TOKO FADLI. {t('footer.allRightsReserved')}.</div>
           <div className="flex items-center gap-1">
             {t('footer.builtWith')} <span className="text-red-500">♥</span> {t('footer.using')}{' '}
             <a
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                window.location.hostname || 'pos-sembako'
+                window.location.hostname || 'toko-fadli'
               )}`}
               target="_blank"
               rel="noopener noreferrer"

@@ -132,6 +132,11 @@ export const useCartStore = create<CartStore>()(
     }),
     {
       name: 'pos-cart-storage',
+      partialize: (state) => ({
+        cart: state.cart,
+        cartDiscount: state.cartDiscount,
+        taxEnabled: state.taxEnabled,
+      }),
     }
   )
 );

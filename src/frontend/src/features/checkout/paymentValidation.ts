@@ -14,6 +14,12 @@ export function validatePayment(
     return { valid: false, error: t('checkout.selectPaymentError') };
   }
 
+  // Check for invalid payment amounts
+  const hasInvalidAmount = payments.some(p => isNaN(p.amount) || p.amount < 0);
+  if (hasInvalidAmount) {
+    return { valid: false, error: t('checkout.insufficientPayment') };
+  }
+
   if (totalPaid < totalDue) {
     return { valid: false, error: t('checkout.insufficientPayment') };
   }

@@ -1,126 +1,81 @@
 {
   "kind": "build_request",
-  "title": "Full-app glassmorphism/3D theme refresh + 100% Bahasa Indonesia UI + fix checkout totals/change and auto stock decrement",
-  "priority": "normal",
+  "title": "Fix Checkout totals showing Rp 0 and make payment remaining/change update live",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-23",
-      "text": "Apply a modern glassmorphism + subtle 3D visual refresh across the entire app (POS, Checkout, Admin pages, Reports, dialogs, sheets) while keeping light/dark mode support and ensuring readability.",
+      "id": "REQ-32",
+      "text": "Fix the Checkout order summary calculations so Subtotal, Tax, Discount, and Total are always computed from the current cart contents and never display Rp 0 when the cart has priced items.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-5",
+          "msg-8"
         ],
         "quotes": [
-          "tampilan design ui uxnya modern glass 3d keren",
-          "full theme seluruh apk"
+          "TUH BRO LO LIATA DEH TOTALNYA MASIH TERBACA 0 RUPIAH",
+          "Gas bang, build"
         ]
       },
       "acceptanceCriteria": [
-        "All major surfaces (App layout shell, cards, tables, dialogs/sheets, primary/secondary buttons, inputs) reflect a consistent glassmorphism/3D style (blurred/translucent surfaces, layered depth via shadows/highlights) in both light and dark mode.",
-        "Contrast remains accessible: text and icons remain clearly legible on glass surfaces; no critical UI becomes hard to read in either theme.",
-        "The theme is applied consistently across all routes defined in the app (POS, Checkout, Catalog, Inventory, Receiving, Promotions, Payment Methods, Users, CSV, Reports, Sync Status, Returns, Transaction details)."
+        "Given a cart with multiple items and non-zero prices, the Checkout page shows non-zero Subtotal and Total matching the cart contents.",
+        "Subtotal displayed in Checkout equals the sum of (item price * qty) minus per-item discounts, before cart-level discount and tax.",
+        "If tax is enabled in the cart, Checkout shows Tax as 10% of (subtotal - cart-level discount), rounded consistently with the cart store logic.",
+        "Total displayed in Checkout equals (subtotal - cart-level discount + tax) and matches the cart store’s computed total.",
+        "The Checkout calculations update immediately when cart state changes (e.g., returning to POS, modifying quantities/discounts/tax, then re-opening Checkout) without requiring a page reload."
       ]
     },
     {
-      "id": "REQ-24",
-      "text": "Ensure 100% of user-facing UI text is in Bahasa Indonesia by removing remaining hardcoded English strings and routing all labels, headings, placeholders, empty states, validation errors, and toast messages through the existing Indonesian i18n strings helper.",
+      "id": "REQ-33",
+      "text": "Fix the Checkout payment calculations so Remaining and Change are always correct and update live as the cashier adds/removes payments and edits amounts.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-6"
         ],
         "quotes": [
-          "gua pengen full indo",
-          "100% bahasa indonesia"
+          "perlu brooooo perlu banget"
         ]
       },
       "acceptanceCriteria": [
-        "No English user-facing strings remain in POS and Checkout flows (including toasts like “Added … to cart”, “Cart is empty”, “Product Search”, “Scan Barcode”, and checkout validation/toasts).",
-        "No English user-facing strings remain in admin modules and shared components that are currently visible (buttons, dialogs, navigation labels, empty states).",
-        "All changed text uses the existing i18n approach (the translation helper + strings file) rather than inline literals."
+        "Remaining equals max(0, totalDue - totalPaid) and updates immediately when payments are added or removed.",
+        "Change equals max(0, totalPaid - totalDue) and becomes visible immediately when totalPaid exceeds totalDue.",
+        "The “Complete Transaction” button remains disabled while Remaining > 0 and becomes enabled as soon as Remaining reaches 0.",
+        "Validation uses the same totalDue value that is displayed as Total in Checkout (no mismatches between UI and validation)."
       ]
     },
     {
-      "id": "REQ-25",
-      "text": "Fix/rework the Checkout calculations so that the transaction total is always correct and automatically populated/updated based on the current cart (including item-level discounts, cart discount, and tax toggle), and make payment remaining/change calculations update live as the cashier enters amounts.",
+      "id": "REQ-34",
+      "text": "Ensure the transaction payload created during checkout stores consistent monetary fields (subtotal, discount, tax, total) derived from the cart calculations, so receipts and transaction details display correct amounts.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-5",
+          "msg-8"
         ],
         "quotes": [
-          "ketika produk di beli otomatis totalnnya belum terisi",
-          "ketika gua masukin nominal uaang penbeli belum otomatis terlihat berapa kembalian uang yg harus di berikan"
+          "TUH BRO LO LIATA DEH TOTALNYA MASIH TERBACA 0 RUPIAH",
+          "Gas bang, build"
         ]
       },
       "acceptanceCriteria": [
-        "Checkout displays the correct Total that matches the POS cart’s computed total and updates immediately when cart contents/discounts/tax change (no stale/empty totals).",
-        "As the cashier enters an amount for the selected payment method, the UI shows updated Remaining and, when overpaid, Change due immediately (without requiring the user to add the payment first).",
-        "Checkout prevents completing the transaction until the amount due is fully covered (remaining <= 0), and all validation/toast messages are in Bahasa Indonesia."
-      ]
-    },
-    {
-      "id": "REQ-26",
-      "text": "Implement automatic stock reduction when a sale is completed: when a transaction is created successfully, decrement on-hand inventory for each sold product variant by the sold quantity, persist the new stock in offline master data, and reflect the updated stock immediately in Inventory views.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "stokc barang harusnya otomatis berkurang juga"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After completing a checkout, on-hand stock is reduced for each (productId, variantId) in the cart by the quantity sold.",
-        "The updated stock is persisted locally (offline master data) so the Inventory page shows the decreased quantities without requiring a reload.",
-        "If stock cannot be updated for any item (e.g., missing product/variant), the app shows a clear Bahasa Indonesia error and does not silently ignore the inconsistency."
-      ]
-    },
-    {
-      "id": "REQ-27",
-      "text": "Add backend support for creating a completed transaction that also updates inventory: expose a single-actor Motoko method to record a transaction and decrement stock for each line item atomically, with user authorization consistent with existing cashier/user permissions.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-1"
-        ],
-        "quotes": [
-          "stokc barang harusnya otomatis berkurang juga"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend provides a shared method to create a transaction (items + payments + totals) and stores it in canister state, requiring authenticated user permission (cashier/user) to call.",
-        "The same backend method decrements stock for each sold (productId, variantId) by quantity as part of the transaction creation, and traps/fails the call if any decrement would be invalid per defined rules (e.g., missing stock entry handling is consistent).",
-        "Frontend can optionally queue/sync this operation using the existing offline sync queue pattern without introducing additional backend services or databases."
+        "When a transaction is created, stored subtotal/discount/tax/total match the values displayed in Checkout at the moment of completion.",
+        "The printed receipt (58mm/80mm) and Transaction Details screen show the same total as Checkout for the completed transaction.",
+        "No stored monetary field becomes negative; if discounts exceed subtotal, values are clamped consistently with cart store behavior."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui (shadcn components are read-only); implement styling by composing components and adjusting theme tokens (e.g., frontend/src/index.css + Tailwind config) and app-level wrappers.",
-    "Respect the single-actor Motoko backend architecture: all Motoko logic must remain in backend/main.mo; only create/update backend/migration.mo if an actual state migration is required.",
-    "Use English only for this build request document; in the app itself, all user-facing UI text must be Bahasa Indonesia as requested."
+    "Use English for any new or modified user-facing text introduced by this change.",
+    "Do not edit files under frontend/src/components/ui (shadcn components must be composed, not modified).",
+    "Do not modify immutable hook paths listed in SYSTEM_CONTEXT (e.g., frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx)."
   ],
   "nonGoals": [
-    "Do not add new third-party authentication providers (only Internet Identity).",
-    "Do not introduce external databases or multi-service architectures.",
-    "Do not add new POS features beyond the requested UI refresh, full Indonesian localization completion, checkout calculation fixes, and automatic stock decrement on sale."
+    "Implementing or changing backend/Motoko transaction calculation logic (this request is focused on fixing the frontend checkout/payment calculations and stored transaction payload values).",
+    "Replacing the mocked payment methods list in Checkout with backend-driven payment methods."
   ],
   "imageRequirements": {
-    "required": [
-      "Abstract colorful glass gradient background with soft bokeh highlights (app-bg-glass.dim_1920x1080.png)"
-    ],
+    "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

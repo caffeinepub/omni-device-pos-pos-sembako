@@ -1,67 +1,62 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T05:34:23.577Z",
-  "summary": "Diff implements a glassmorphism-style token layer and applies Indonesian i18n in several updated UI components, plus live checkout remaining/change math. However, the required background image asset is not added, stock decrement logic is not variant-safe and is applied before transaction creation, and backend atomic transaction+stock decrement support is not evidenced in the provided backend diff.",
+  "generatedAt": "2026-02-13T06:32:35.580Z",
+  "summary": "Diff implements cart-derived subtotal/discount/tax/total in the cart store, uses those values in Checkout for remaining/change and transaction creation, and updates receipt rendering to display the stored breakdown. Some acceptance-criteria behaviors (button disabled state, conditional change visibility, and Transaction Details screen consistency) are not evidenced in the provided diff summary due to truncation / lack of related file changes.",
   "missing_requirements": [
     {
-      "id": "REQ-27",
-      "requirement": "Add backend support for creating a completed transaction that also updates inventory atomically via a single Motoko method with authorization.",
-      "reason": "backend/main.mo is modified but the diff excerpt only shows type/state definitions; no new shared method for atomic transaction creation + stock decrement (with auth checks and trap on invalid decrements) is visible in the provided truncated evidence.",
+      "id": "REQ-33",
+      "requirement": "The “Complete Transaction” button remains disabled while Remaining > 0 and becomes enabled as soon as Remaining reaches 0.",
+      "reason": "CheckoutPage.tsx shows remaining/change computed live, and validation checks totalPaid vs cartTotal, but the diff excerpt does not show any Button disabled logic tied to Remaining.",
       "evidence": [
-        "backend/main.mo (truncated)"
+        "frontend/src/features/checkout/CheckoutPage.tsx (truncated)"
       ]
     },
     {
-      "id": "REQ-26",
-      "requirement": "Automatic stock reduction on completed sale must decrement on-hand inventory per (productId, variantId), persist offline, reflect immediately, and error (in Bahasa Indonesia) if any item cannot be updated.",
-      "reason": "CheckoutPage decrements a single `product.stock` by matching only `product.id` (ignores `variantId`), performs the stock update before transaction creation (so a later transaction failure could leave stock decremented), and does not show handling for missing product/variant entries beyond a null products check. This does not meet the per-variant and consistency guarantees in AC.",
+      "id": "REQ-33",
+      "requirement": "Change becomes visible immediately when totalPaid exceeds totalDue.",
+      "reason": "The diff shows a computed `change` value, but the UI conditions for visibility/rendering of the Change line are not shown in the truncated CheckoutPage excerpt.",
       "evidence": [
-        "frontend/src/features/checkout/CheckoutPage.tsx (truncated)",
-        "frontend/src/features/inventory/InventoryPage.tsx (truncated)"
+        "frontend/src/features/checkout/CheckoutPage.tsx (truncated)"
       ]
     },
     {
-      "id": "REQ-23",
-      "requirement": "Add required abstract colorful glass gradient background image asset (app-bg-glass.dim_1920x1080.png).",
-      "reason": "CSS references `/assets/generated/app-bg-glass.dim_1920x1080.png`, but the diff shows no added files, so the required image asset is not provided in this change set.",
+      "id": "REQ-32",
+      "requirement": "Checkout order summary shows Subtotal, Tax, Discount, and Total computed from current cart contents and updates immediately when cart state changes without reload.",
+      "reason": "cartStore now computes cartSubtotal/cartTax/cartTotal, but the diff excerpt for CheckoutPage is truncated before the order summary rendering, so it is not evidenced that the UI displays and reacts as required.",
       "evidence": [
-        "frontend/src/index.css (truncated)",
-        "File diff summary: Added files: none"
+        "frontend/src/features/pos/cartStore.ts",
+        "frontend/src/features/checkout/CheckoutPage.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "requirement": "Transaction Details screen shows the same total as Checkout for the completed transaction.",
+      "reason": "ReceiptTemplate was updated to use transaction.subtotal/discount/tax/total, but there is no diff evidence for any Transaction Details screen component being updated/verified.",
+      "evidence": [
+        "frontend/src/features/receipts/ReceiptTemplate.tsx"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Changed CSV import/export format to use semicolon delimiter and added Indonesian error messaging in CSV utilities.",
-      "reason": "BuildRequest does not request CSV delimiter changes; this is a functional behavior change beyond the specified UI refresh/localization completion/checkout+stock fixes.",
+      "description": "Introduced a standalone payment validation module (`validatePayment`) with translated error keys.",
+      "reason": "BuildRequest asks to fix payment calculations and validation consistency, but does not explicitly request a new validation module/file; this is additional implementation beyond the stated requirements.",
       "evidence": [
-        "frontend-file-summaries.txt (csvExport.ts, csvParse.ts)"
-      ]
-    },
-    {
-      "description": "PWA manifest theme color update.",
-      "reason": "Not requested by any requirement; BuildRequest focuses on theme refresh, Indonesian localization, checkout calculations, and stock decrement/atomic backend support.",
-      "evidence": [
-        "frontend-file-summaries.txt (frontend/public/manifest.webmanifest)"
+        "frontend/src/features/checkout/paymentValidation.ts",
+        "frontend/src/features/checkout/CheckoutPage.tsx (truncated)"
       ]
     }
   ],
-  "confidence": 0.64,
+  "confidence": 0.56,
   "changed_files": [
-    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/AppLayout.tsx",
-    "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
     "frontend/src/features/checkout/CheckoutPage.tsx",
     "frontend/src/features/checkout/paymentValidation.ts",
-    "frontend/src/features/inventory/InventoryPage.tsx",
-    "frontend/src/features/pos/PosPage.tsx",
     "frontend/src/features/pos/cartStore.ts",
-    "frontend/src/features/reports/ReportsPage.tsx",
+    "frontend/src/features/receipts/ReceiptTemplate.tsx",
     "frontend/src/i18n/strings.id.ts",
-    "frontend/src/index.css",
-    "frontend/tailwind.config.js",
+    "frontend/src/offline/storage.ts",
     "project_state.json"
   ]
 }

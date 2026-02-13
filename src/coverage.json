@@ -1,129 +1,69 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-13T05:34:23.581Z",
+  "generatedAt": "2026-02-13T06:32:35.584Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 4,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-23",
-        "summary": "Apply a modern glassmorphism + subtle 3D visual refresh across the entire app (POS, Checkout, Admin pages, Reports, dialogs, sheets) while keeping light/dark mode support and ensuring readability.",
+        "id": "REQ-32",
+        "summary": "Fix the Checkout order summary calculations so Subtotal, Tax, Discount, and Total are always computed from the current cart contents and never display Rp 0 when the cart has priced items.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png",
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/AppLayout.tsx",
-          "frontend/src/features/pos/PosPage.tsx",
-          "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/inventory/InventoryPage.tsx",
-          "frontend/src/features/catalog/CatalogPage.tsx",
-          "frontend/src/features/reports/ReportsPage.tsx",
-          "frontend/src/App.tsx"
+          "frontend/src/features/pos/cartStore.ts",
+          "frontend/src/features/checkout/CheckoutPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png",
-          "frontend/src/index.css",
-          "frontend/tailwind.config.js",
-          "frontend/src/components/AppLayout.tsx",
-          "frontend/src/features/pos/PosPage.tsx",
-          "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/inventory/InventoryPage.tsx",
-          "frontend/src/features/reports/ReportsPage.tsx"
+          "frontend/src/features/pos/cartStore.ts",
+          "frontend/src/features/checkout/CheckoutPage.tsx"
         ]
       },
       {
-        "id": "REQ-24",
-        "summary": "Ensure 100% of user-facing UI text is in Bahasa Indonesia by removing remaining hardcoded English strings and routing all labels, headings, placeholders, empty states, validation errors, and toast messages through the existing Indonesian i18n strings helper.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/i18n/strings.id.ts",
-          "frontend/src/features/pos/PosPage.tsx",
-          "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/checkout/paymentValidation.ts",
-          "frontend/src/features/inventory/InventoryPage.tsx",
-          "frontend/src/features/reports/ReportsPage.tsx",
-          "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
-          "frontend/src/components/AppLayout.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/i18n/strings.id.ts",
-          "frontend/src/features/pos/PosPage.tsx",
-          "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/checkout/paymentValidation.ts",
-          "frontend/src/features/inventory/InventoryPage.tsx",
-          "frontend/src/features/reports/ReportsPage.tsx",
-          "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
-          "frontend/src/components/AppLayout.tsx"
-        ]
-      },
-      {
-        "id": "REQ-25",
-        "summary": "Fix/rework the Checkout calculations so that the transaction total is always correct and automatically populated/updated based on the current cart (including item-level discounts, cart discount, and tax toggle), and make payment remaining/change calculations update live as the cashier enters amounts.",
+        "id": "REQ-33",
+        "summary": "Fix the Checkout payment calculations so Remaining and Change are always correct and update live as the cashier adds/removes payments and edits amounts.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/checkout/paymentValidation.ts",
-          "frontend/src/features/pos/cartStore.ts"
+          "frontend/src/features/checkout/paymentValidation.ts"
         ],
         "matchedFiles": [
           "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/checkout/paymentValidation.ts",
-          "frontend/src/features/pos/cartStore.ts"
+          "frontend/src/features/checkout/paymentValidation.ts"
         ]
       },
       {
-        "id": "REQ-26",
-        "summary": "Implement automatic stock reduction when a sale is completed: when a transaction is created successfully, decrement on-hand inventory for each sold product variant by the sold quantity, persist the new stock in offline master data, and reflect the updated stock immediately in Inventory views.",
+        "id": "REQ-34",
+        "summary": "Ensure the transaction payload created during checkout stores consistent monetary fields (subtotal, discount, tax, total) derived from the cart calculations, so receipts and transaction details display correct amounts.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/offline/storage.ts",
           "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/inventory/InventoryPage.tsx",
-          "frontend/src/i18n/strings.id.ts"
+          "frontend/src/features/receipts/ReceiptTemplate.tsx"
         ],
         "matchedFiles": [
+          "frontend/src/offline/storage.ts",
           "frontend/src/features/checkout/CheckoutPage.tsx",
-          "frontend/src/features/inventory/InventoryPage.tsx",
-          "frontend/src/i18n/strings.id.ts"
+          "frontend/src/features/receipts/ReceiptTemplate.tsx"
         ]
-      },
-      {
-        "id": "REQ-27",
-        "summary": "Add backend support for creating a completed transaction that also updates inventory: expose a single-actor Motoko method to record a transaction and decrement stock for each line item atomically, with user authorization consistent with existing cashier/user permissions.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/AppLayout.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
     "frontend/src/features/checkout/CheckoutPage.tsx",
     "frontend/src/features/checkout/paymentValidation.ts",
-    "frontend/src/features/inventory/InventoryPage.tsx",
-    "frontend/src/features/pos/PosPage.tsx",
     "frontend/src/features/pos/cartStore.ts",
-    "frontend/src/features/reports/ReportsPage.tsx",
+    "frontend/src/features/receipts/ReceiptTemplate.tsx",
     "frontend/src/i18n/strings.id.ts",
-    "frontend/src/index.css",
-    "frontend/tailwind.config.js",
+    "frontend/src/offline/storage.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

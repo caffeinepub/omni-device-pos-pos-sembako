@@ -56,16 +56,20 @@ export async function createTransaction(data: {
   items: any[];
   payments: any[];
   total: number;
+  subtotal?: number;
+  discount?: number;
+  tax?: number;
+  timestamp?: number;
 }): Promise<number> {
   const db = await openDB();
   const transaction: any = {
     items: data.items,
     payments: data.payments,
-    total: data.total,
-    subtotal: data.total,
-    discount: 0,
-    tax: 0,
-    timestamp: Date.now(),
+    total: Math.max(0, data.total),
+    subtotal: Math.max(0, data.subtotal ?? data.total),
+    discount: Math.max(0, data.discount ?? 0),
+    tax: Math.max(0, data.tax ?? 0),
+    timestamp: data.timestamp ?? Date.now(),
     status: 'completed',
   };
 
@@ -125,6 +129,56 @@ export async function queueForSync(
     const transaction = db.transaction(['syncQueue'], 'readwrite');
     const store = transaction.objectStore('syncQueue');
     const request = store.add(item);
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve();
+  });
+}
+
+export async function getSyncQueue(): Promise<any[]> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['syncQueue'], 'readonly');
+    const store = transaction.objectStore('syncQueue');
+    const request = store.getAll();
+
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result || []);
+  });
+}
+
+export async function updateSyncQueueItem(
+  id: number,
+  updates: Partial<any>
+): Promise<void> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['syncQueue'], 'readwrite');
+    const store = transaction.objectStore('syncQueue');
+    const getRequest = store.get(id);
+
+    getRequest.onsuccess = () => {
+      const item = getRequest.result;
+      if (item) {
+        const updatedItem = { ...item, ...updates };
+        const putRequest = store.put(updatedItem);
+        putRequest.onerror = () => reject(putRequest.error);
+        putRequest.onsuccess = () => resolve();
+      } else {
+        reject(new Error('Item not found'));
+      }
+    };
+
+    getRequest.onerror = () => reject(getRequest.error);
+  });
+}
+
+export async function deleteSyncQueueItem(id: number): Promise<void> {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(['syncQueue'], 'readwrite');
+    const store = transaction.objectStore('syncQueue');
+    const request = store.delete(id);
 
     request.onerror = () => reject(request.error);
     request.onsuccess = () => resolve();

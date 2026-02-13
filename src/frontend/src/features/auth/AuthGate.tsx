@@ -35,7 +35,7 @@ export function AuthGate({ children }: AuthGateProps) {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto mb-4">
-              <img src="/assets/generated/pos-logo.dim_512x512.png" alt="POS" className="h-20 w-20 mx-auto" />
+              <img src="/assets/generated/pos-logo-toko-fadli.dim_512x512.png" alt="TOKO FADLI" className="h-20 w-20 mx-auto" />
             </div>
             <CardTitle className="text-2xl">{t('auth.welcome')}</CardTitle>
             <CardDescription>

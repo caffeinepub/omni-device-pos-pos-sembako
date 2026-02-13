@@ -1,174 +1,76 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Glassmorphism/3D theme refresh, full Bahasa Indonesia UI, checkout calculation fixes, and auto stock decrement (frontend)",
+  "title": "Fix Checkout totals and live payment remaining/change calculations",
   "requirements": [
     {
-      "id": "REQ-23",
-      "summary": "Apply a consistent glassmorphism + subtle 3D visual theme across all app routes and surfaces with readable light/dark mode support.",
+      "id": "REQ-32",
+      "summary": "Ensure Checkout order summary (Subtotal/Tax/Discount/Total) is always computed from the live cart store calculations and never shows Rp 0 for priced carts.",
       "acceptanceCriteria": [
-        "All major surfaces (App layout shell, cards, tables, dialogs/sheets, primary/secondary buttons, inputs) reflect a consistent glassmorphism/3D style (blurred/translucent surfaces, layered depth via shadows/highlights) in both light and dark mode.",
-        "Contrast remains accessible: text and icons remain clearly legible on glass surfaces; no critical UI becomes hard to read in either theme.",
-        "The theme is applied consistently across all routes defined in the app (POS, Checkout, Catalog, Inventory, Receiving, Promotions, Payment Methods, Users, CSV, Reports, Sync Status, Returns, Transaction details)."
+        "Given a cart with multiple items and non-zero prices, the Checkout page shows non-zero Subtotal and Total matching the cart contents.",
+        "Subtotal displayed in Checkout equals the sum of (item price * qty) minus per-item discounts, before cart-level discount and tax.",
+        "If tax is enabled in the cart, Checkout shows Tax as 10% of (subtotal - cart-level discount), rounded consistently with the cart store logic.",
+        "Total displayed in Checkout equals (subtotal - cart-level discount + tax) and matches the cart store’s computed total.",
+        "The Checkout calculations update immediately when cart state changes (e.g., returning to POS, modifying quantities/discounts/tax, then re-opening Checkout) without requiring a page reload."
       ],
       "file_operations": [
-        {
-          "path": "frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png",
-          "operation": "create",
-          "description": "Add the required generated background asset at frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png and ensure it is referenced by the app shell as the global glass gradient backdrop."
-        },
-        {
-          "path": "frontend/src/index.css",
-          "operation": "modify",
-          "description": "Introduce app-level glass/3D theme tokens and utility classes (e.g., reusable glass surface, elevated surface, and readable-on-glass text treatments) implemented via existing Tailwind/CSS variables and dark mode variables; do not modify shadcn ui components under frontend/src/components/ui."
-        },
-        {
-          "path": "frontend/tailwind.config.js",
-          "operation": "modify",
-          "description": "Adjust Tailwind theme extensions to support the glass/3D design consistently (e.g., additional shadows, border opacity presets, backdrop blur utilities, and color token mapping for light/dark)."
-        },
-        {
-          "path": "frontend/src/components/AppLayout.tsx",
-          "operation": "modify",
-          "description": "Apply the global glassmorphism layout shell: set the app background to use frontend/public/assets/generated/app-bg-glass.dim_1920x1080.png, refine header/footer/main container surfaces for glass translucency + subtle 3D depth, and ensure nav links, sheets, and dropdowns remain readable in both themes."
-        },
-        {
-          "path": "frontend/src/features/pos/PosPage.tsx",
-          "operation": "modify",
-          "description": "Update POS page surface composition (cards/sheets/cart panel) to use the new glass/3D wrapper classes consistently and ensure hover/active states remain legible in light/dark."
-        },
-        {
-          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
-          "operation": "modify",
-          "description": "Update Checkout page surface composition (summary/payment cards, totals rows, inputs/buttons) to match the glass/3D theme while maintaining clear numeric readability in light/dark."
-        },
-        {
-          "path": "frontend/src/features/inventory/InventoryPage.tsx",
-          "operation": "modify",
-          "description": "Update Inventory page (tables, dialog, alerts, badges) to use the glass/3D surface styles consistently and keep status colors readable on translucent backgrounds."
-        },
-        {
-          "path": "frontend/src/features/catalog/CatalogPage.tsx",
-          "operation": "modify",
-          "description": "Update Catalog page (dialogs, forms, tables, alerts) to adopt the glass/3D style via composition and className usage without changing shadcn ui internals."
-        },
-        {
-          "path": "frontend/src/features/reports/ReportsPage.tsx",
-          "operation": "modify",
-          "description": "Update Reports page cards/tables/filters to match the global glassmorphism/3D theme and ensure charts/summary icons/text remain readable on glass."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Ensure the theme refresh is applied uniformly across the router shell (root layout) and that global overlays/toasts remain readable on top of glass backgrounds."
-        }
-      ]
-    },
-    {
-      "id": "REQ-24",
-      "summary": "Convert all remaining user-facing strings to Bahasa Indonesia using the existing i18n helper and Indonesian strings file (no hardcoded English).",
-      "acceptanceCriteria": [
-        "No English user-facing strings remain in POS and Checkout flows (including toasts like “Added … to cart”, “Cart is empty”, “Product Search”, “Scan Barcode”, and checkout validation/toasts).",
-        "No English user-facing strings remain in admin modules and shared components that are currently visible (buttons, dialogs, navigation labels, empty states).",
-        "All changed text uses the existing i18n approach (the translation helper + strings file) rather than inline literals."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/i18n/strings.id.ts",
-          "operation": "modify",
-          "description": "Add/expand missing Indonesian translation keys needed to eliminate remaining English UI strings across POS/Checkout/Admin/Reports/Inventory flows (including validation errors, empty states, and toast messages)."
-        },
-        {
-          "path": "frontend/src/features/pos/PosPage.tsx",
-          "operation": "modify",
-          "description": "Replace hardcoded English strings (search headers/placeholders, tax/discount labels, cart empty text, button labels, active/inactive labels, barcode scan sheet title, and toast messages) with t(...) lookups from the existing i18n helper."
-        },
-        {
-          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
-          "operation": "modify",
-          "description": "Replace all hardcoded English strings (headings, labels, placeholders, empty state, button labels, Remaining/Change labels, and toast messages) with t(...) keys and ensure Checkout copy matches Indonesian terminology."
-        },
-        {
-          "path": "frontend/src/features/checkout/paymentValidation.ts",
-          "operation": "modify",
-          "description": "Return i18n-driven error messaging (e.g., via i18n keys or a small mapper) so Checkout validation/toast output is fully Bahasa Indonesia and consistent with the existing translation approach."
-        },
-        {
-          "path": "frontend/src/features/inventory/InventoryPage.tsx",
-          "operation": "modify",
-          "description": "Replace English titles/descriptions/table headers/dialog strings/toasts (e.g., low stock alert, adjust stock, reason placeholders, success/failure) with t(...) lookups."
-        },
-        {
-          "path": "frontend/src/features/reports/ReportsPage.tsx",
-          "operation": "modify",
-          "description": "Replace English labels/toasts (e.g., export success/failure, filter labels, headings) with t(...) lookups using Indonesian strings."
-        },
-        {
-          "path": "frontend/src/features/barcode/CameraBarcodeScanner.tsx",
-          "operation": "modify",
-          "description": "Ensure camera/barcode scanning UI and error states are fully Bahasa Indonesia using t(...). Use the selected component camera (camera/useCamera hook) for camera messaging consistency; Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/AppLayout.tsx",
-          "operation": "modify",
-          "description": "Audit and replace any remaining visible English strings in the layout shell (branding text, footer copy, menu items) with t(...) keys, keeping navigation labels consistent with strings.id.ts."
-        }
-      ]
-    },
-    {
-      "id": "REQ-25",
-      "summary": "Rework Checkout totals and payment remaining/change to be computed from the live cart total and update immediately as amounts are entered.",
-      "acceptanceCriteria": [
-        "Checkout displays the correct Total that matches the POS cart’s computed total and updates immediately when cart contents/discounts/tax change (no stale/empty totals).",
-        "As the cashier enters an amount for the selected payment method, the UI shows updated Remaining and, when overpaid, Change due immediately (without requiring the user to add the payment first).",
-        "Checkout prevents completing the transaction until the amount due is fully covered (remaining <= 0), and all validation/toast messages are in Bahasa Indonesia."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
-          "operation": "modify",
-          "description": "Compute and display checkout totals from the live Zustand cart store (including item discounts, cart discount, and tax toggle) and implement live Remaining/Change calculations that include the currently entered amount for the selected payment method (before it is added). Ensure the complete action stays disabled until the amount due is covered and all toasts/labels use t(...)."
-        },
-        {
-          "path": "frontend/src/features/checkout/paymentValidation.ts",
-          "operation": "modify",
-          "description": "Update validation logic to align with the new live-payment behavior (including handling a pending/typed amount consistently) and ensure returned messages are Bahasa Indonesia via the existing i18n approach."
-        },
         {
           "path": "frontend/src/features/pos/cartStore.ts",
           "operation": "modify",
-          "description": "Harden and normalize cart total computation so it is always defined and consistent for Checkout (e.g., ensure discounts/tax never produce NaN/undefined totals), preserving the existing discount and tax semantics."
+          "description": "Prevent persisted cart state from overwriting computed monetary getters by configuring zustand persist to store only base fields (cart, cartDiscount, taxEnabled). Keep cartSubtotal/cartTax/cartTotal derived from current cart contents and clamped to non-negative values."
+        },
+        {
+          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
+          "operation": "modify",
+          "description": "Use cart store’s computed fields (cartSubtotal/cartDiscount/cartTax/cartTotal) directly for the order summary; ensure displayed Subtotal reflects per-item discounts and updates on any cart change (no derived formula that can desync)."
         }
       ]
     },
     {
-      "id": "REQ-26",
-      "summary": "Automatically decrement local/offline on-hand stock after a successful checkout and reflect the updated inventory immediately.",
+      "id": "REQ-33",
+      "summary": "Make Checkout payment Remaining/Change computations correct and fully reactive to payment add/remove/edit, and keep completion validation aligned with displayed Total.",
       "acceptanceCriteria": [
-        "After completing a checkout, on-hand stock is reduced for each (productId, variantId) in the cart by the quantity sold.",
-        "The updated stock is persisted locally (offline master data) so the Inventory page shows the decreased quantities without requiring a reload.",
-        "If stock cannot be updated for any item (e.g., missing product/variant), the app shows a clear Bahasa Indonesia error and does not silently ignore the inconsistency."
+        "Remaining equals max(0, totalDue - totalPaid) and updates immediately when payments are added or removed.",
+        "Change equals max(0, totalPaid - totalDue) and becomes visible immediately when totalPaid exceeds totalDue.",
+        "The “Complete Transaction” button remains disabled while Remaining > 0 and becomes enabled as soon as Remaining reaches 0.",
+        "Validation uses the same totalDue value that is displayed as Total in Checkout (no mismatches between UI and validation)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/checkout/CheckoutPage.tsx",
+          "operation": "modify",
+          "description": "Add live-edit support for existing payment entries (editable amount per row) and recompute totalPaid/remaining/change from current payments and cartTotal. Ensure the Complete Transaction button disabled state and validatePayment() both use the exact same totalDue value shown in the UI (cartTotal)."
+        },
+        {
+          "path": "frontend/src/features/checkout/paymentValidation.ts",
+          "operation": "modify",
+          "description": "Align validation expectations with the Checkout totals by ensuring validation checks are performed against the provided totalDue value (the same value displayed as Total), and treat negative/NaN payment amounts as invalid to prevent mismatches during live edits."
+        }
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "summary": "Store consistent monetary fields in the created transaction payload (subtotal/discount/tax/total) derived from cart calculations so receipt and transaction details show correct amounts.",
+      "acceptanceCriteria": [
+        "When a transaction is created, stored subtotal/discount/tax/total match the values displayed in Checkout at the moment of completion.",
+        "The printed receipt (58mm/80mm) and Transaction Details screen show the same total as Checkout for the completed transaction.",
+        "No stored monetary field becomes negative; if discounts exceed subtotal, values are clamped consistently with cart store behavior."
       ],
       "file_operations": [
         {
           "path": "frontend/src/offline/storage.ts",
           "operation": "modify",
-          "description": "Enhance the offline createTransaction flow to also apply an atomic local stock decrement across master data for each sold cart line item, persist the updated products master data, and throw a user-visible error when any product/variant is missing or cannot be updated."
+          "description": "Extend the offline createTransaction storage logic to accept and persist the monetary breakdown fields (subtotal, discount, tax, total) from Checkout instead of overwriting them with defaults, while keeping values non-negative."
         },
         {
           "path": "frontend/src/features/checkout/CheckoutPage.tsx",
           "operation": "modify",
-          "description": "After a successful transaction, ensure master data queries for products are refreshed/invalidated so Inventory views reflect the decreased stock immediately; on failure to decrement stock, show a clear Bahasa Indonesia error (via t(...)) and do not proceed as if the transaction fully succeeded."
+          "description": "Build the transaction payload using the cart store’s computed monetary fields (subtotal/discount/tax/total) at completion time, and pass them through to offline createTransaction so stored values match what Checkout displays."
         },
         {
-          "path": "frontend/src/features/inventory/InventoryPage.tsx",
+          "path": "frontend/src/features/receipts/ReceiptTemplate.tsx",
           "operation": "modify",
-          "description": "Ensure Inventory renders stock based on the persisted offline master data updates and uses Bahasa Indonesia messaging for any stock-related error states surfaced after checkout."
-        },
-        {
-          "path": "frontend/src/i18n/strings.id.ts",
-          "operation": "modify",
-          "description": "Add Indonesian strings for stock-decrement success/failure states and inconsistency errors (e.g., missing product/variant during stock update) so the app never shows English when stock updates fail."
+          "description": "Render receipt totals using the stored transaction monetary fields (subtotal/discount/tax/total) to ensure printed output matches Checkout at completion time, while keeping backward-compatible fallbacks for older stored transactions if needed."
         }
       ]
     }

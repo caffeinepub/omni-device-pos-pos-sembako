@@ -5,128 +5,139 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, CreditCard, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Edit2 } from 'lucide-react';
 import { useCartStore } from '../pos/cartStore';
-import { useMasterData } from '../../offline/masterDataCache';
 import { formatCurrency } from '../../i18n/format';
-import { createTransaction, saveMasterData, getMasterData } from '../../offline/storage';
+import { createTransaction } from '../../offline/storage';
 import { toast } from 'sonner';
+import { validatePayment } from './paymentValidation';
 import { t } from '../../i18n/t';
-import { useQueryClient } from '@tanstack/react-query';
 
-interface Payment {
-  methodId: number;
-  methodName: string;
+interface PaymentEntry {
+  methodId: string;
   amount: number;
 }
 
 export function CheckoutPage() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const { cart, cartTotal, cartSubtotal, cartDiscount, cartTax, clearCart } = useCartStore();
-  const { data: paymentMethods } = useMasterData('paymentMethods');
-  const [payments, setPayments] = useState<Payment[]>([]);
-  const [selectedMethodId, setSelectedMethodId] = useState<string>('');
-  const [currentAmount, setCurrentAmount] = useState<string>('');
+  const { cart, cartSubtotal, cartTotal, cartDiscount, cartTax, clearCart } = useCartStore();
+  const [payments, setPayments] = useState<PaymentEntry[]>([]);
+  const [selectedMethod, setSelectedMethod] = useState<string>('');
+  const [paymentAmount, setPaymentAmount] = useState<string>('');
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
-  const pendingAmount = Number(currentAmount) || 0;
-  const totalWithPending = totalPaid + pendingAmount;
-  const remaining = Math.max(0, cartTotal - totalWithPending);
-  const change = Math.max(0, totalWithPending - cartTotal);
+  // Mock payment methods - in real app, fetch from backend
+  const paymentMethods = [
+    { id: '1', name: 'Tunai', type: 'cash' },
+    { id: '2', name: 'QRIS', type: 'qrCode' },
+    { id: '3', name: 'Transfer Bank', type: 'bankTransfer' },
+  ];
 
-  const canComplete = totalWithPending >= cartTotal;
+  const totalPaid = useMemo(() => {
+    return payments.reduce((sum, p) => sum + (isNaN(p.amount) ? 0 : p.amount), 0);
+  }, [payments]);
+
+  const remaining = useMemo(() => {
+    return Math.max(0, cartTotal - totalPaid);
+  }, [cartTotal, totalPaid]);
+
+  const change = useMemo(() => {
+    return Math.max(0, totalPaid - cartTotal);
+  }, [totalPaid, cartTotal]);
 
   const handleAddPayment = () => {
-    if (!selectedMethodId) {
+    if (!selectedMethod) {
       toast.error(t('checkout.selectPaymentError'));
       return;
     }
 
-    const amount = Number(currentAmount);
-    if (!amount || amount <= 0) {
+    const amount = parseFloat(paymentAmount);
+    if (isNaN(amount) || amount <= 0) {
       toast.error(t('checkout.insufficientPayment'));
       return;
     }
 
-    const method = (paymentMethods || []).find((m: any) => m.id.toString() === selectedMethodId);
-    if (!method) return;
+    if (editingIndex !== null) {
+      setPayments(payments.map((p, i) => 
+        i === editingIndex ? { methodId: selectedMethod, amount } : p
+      ));
+      setEditingIndex(null);
+      toast.success(t('checkout.paymentUpdated'));
+    } else {
+      setPayments([...payments, { methodId: selectedMethod, amount }]);
+      toast.success(t('checkout.paymentAdded'));
+    }
+    
+    setSelectedMethod('');
+    setPaymentAmount('');
+  };
 
-    setPayments([...payments, { methodId: method.id, methodName: method.name, amount }]);
-    setCurrentAmount('');
-    setSelectedMethodId('');
-    toast.success(t('checkout.paymentAdded'));
+  const handleEditPayment = (index: number) => {
+    const payment = payments[index];
+    setSelectedMethod(payment.methodId);
+    setPaymentAmount(payment.amount.toString());
+    setEditingIndex(index);
+  };
+
+  const handleRemovePayment = (index: number) => {
+    setPayments(payments.filter((_, i) => i !== index));
+    if (editingIndex === index) {
+      setEditingIndex(null);
+      setSelectedMethod('');
+      setPaymentAmount('');
+    }
   };
 
   const handleCompleteTransaction = async () => {
-    if (!canComplete) {
-      toast.error(t('checkout.insufficientPayment'));
-      return;
-    }
+    const paymentsForValidation = payments.map((p) => ({
+      methodId: parseInt(p.methodId),
+      amount: p.amount,
+    }));
 
-    // Add pending payment if exists
-    let finalPayments = [...payments];
-    if (pendingAmount > 0 && selectedMethodId) {
-      const method = (paymentMethods || []).find((m: any) => m.id.toString() === selectedMethodId);
-      if (method) {
-        finalPayments.push({ methodId: method.id, methodName: method.name, amount: pendingAmount });
-      }
-    }
-
-    if (finalPayments.length === 0) {
-      toast.error(t('checkout.selectPaymentError'));
+    const validation = validatePayment(totalPaid, cartTotal, paymentsForValidation);
+    if (!validation.valid) {
+      toast.error(validation.error || t('checkout.transactionFailed'));
       return;
     }
 
     setIsProcessing(true);
-
     try {
-      // Decrement stock for each item
-      const products = await getMasterData('products');
-      if (!products) {
-        throw new Error(t('checkout.productNotFoundInStock'));
-      }
-
-      const updatedProducts = products.map((product: any) => {
-        const cartItem = cart.find(item => item.productId === product.id);
-        if (cartItem) {
-          const newStock = (product.stock || 0) - cartItem.quantity;
-          if (newStock < 0) {
-            throw new Error(`${t('checkout.stockUpdateFailed')}: ${product.name}`);
-          }
-          return { ...product, stock: newStock };
-        }
-        return product;
-      });
-
-      // Save updated stock
-      await saveMasterData('products', updatedProducts);
-
-      // Create transaction
       const transactionData = {
-        items: cart.map(item => ({
+        items: cart.map((item) => ({
           productId: item.productId,
           variantId: item.variantId,
           quantity: item.quantity,
-          unit: { id: 1, name: item.unit, conversionToBase: 1 },
           price: item.price,
+          name: item.name,
+          sku: item.sku,
         })),
-        payments: finalPayments.map(p => ({ methodId: p.methodId, amount: p.amount })),
+        payments: paymentsForValidation,
         total: cartTotal,
+        subtotal: cartSubtotal,
+        discount: cartDiscount,
+        tax: cartTax,
+        timestamp: Date.now(),
       };
 
-      await createTransaction(transactionData);
-
-      // Invalidate queries to refresh inventory
-      queryClient.invalidateQueries({ queryKey: ['masterData', 'products'] });
-
-      toast.success(t('checkout.transactionSuccess'));
+      const transactionId = await createTransaction(transactionData);
+      
       clearCart();
-      navigate({ to: '/' });
-    } catch (error) {
+      toast.success(t('checkout.transactionSuccess'));
+      
+      // Navigate to transaction details with print flag
+      navigate({ 
+        to: '/transaction/$id', 
+        params: { id: String(transactionId) },
+        search: { print: 'true' }
+      });
+    } catch (error: any) {
       console.error('Transaction error:', error);
-      toast.error(`${t('checkout.transactionFailed')}: ${error instanceof Error ? error.message : t('common.error')}`);
+      if (error.message?.includes('Insufficient stock')) {
+        toast.error(t('checkout.stockUpdateFailed'));
+      } else {
+        toast.error(t('checkout.transactionFailed'));
+      }
     } finally {
       setIsProcessing(false);
     }
@@ -134,12 +145,14 @@ export function CheckoutPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] glass-card rounded-2xl p-8">
-        <p className="text-muted-foreground mb-4">{t('pos.cartEmpty')}</p>
-        <Button onClick={() => navigate({ to: '/' })} className="glass-button rounded-xl">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          {t('nav.pos')}
-        </Button>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">{t('pos.cartEmpty')}</p>
+          <Button onClick={() => navigate({ to: '/' })}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            {t('transaction.backToPOS')}
+          </Button>
+        </div>
       </div>
     );
   }
@@ -147,39 +160,36 @@ export function CheckoutPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" onClick={() => navigate({ to: '/' })} className="glass-button rounded-xl">
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/' })}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-3xl font-bold">{t('checkout.title')}</h1>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6">
         <Card className="glass-card">
           <CardHeader>
             <CardTitle>{t('checkout.orderSummary')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2 max-h-[300px] overflow-y-auto">
+            <div className="space-y-2 max-h-64 overflow-y-auto">
               {cart.map((item) => (
-                <div key={item.id} className="flex justify-between items-center glass-card p-3 rounded-xl">
-                  <div>
-                    <p className="font-medium">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {item.quantity} x {formatCurrency(item.price)}
-                    </p>
-                  </div>
-                  <span className="font-semibold">{formatCurrency(item.price * item.quantity)}</span>
+                <div key={item.id} className="flex justify-between text-sm">
+                  <span>
+                    {item.name} × {item.quantity}
+                  </span>
+                  <span>{formatCurrency(item.price * item.quantity - item.discount)}</span>
                 </div>
               ))}
             </div>
 
-            <div className="space-y-2 pt-4 border-t border-border/30">
+            <div className="border-t pt-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span>{t('pos.subtotal')}</span>
-                <span className="font-medium">{formatCurrency(cartSubtotal)}</span>
+                <span>{formatCurrency(cartSubtotal)}</span>
               </div>
               {cartDiscount > 0 && (
-                <div className="flex justify-between text-sm text-muted-foreground">
+                <div className="flex justify-between text-sm text-green-600">
                   <span>{t('pos.discount')}</span>
                   <span>-{formatCurrency(cartDiscount)}</span>
                 </div>
@@ -190,100 +200,103 @@ export function CheckoutPage() {
                   <span>{formatCurrency(cartTax)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-lg font-bold pt-2 border-t border-border/30">
+              <div className="flex justify-between text-lg font-bold border-t pt-2">
                 <span>{t('pos.total')}</span>
-                <span className="text-primary">{formatCurrency(cartTotal)}</span>
+                <span>{formatCurrency(cartTotal)}</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="glass-elevated">
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="h-5 w-5" />
-              {t('checkout.paymentMethod')}
-            </CardTitle>
+            <CardTitle>{t('checkout.paymentMethod')}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>{t('checkout.selectPaymentMethod')}</Label>
+              <Select value={selectedMethod} onValueChange={setSelectedMethod}>
+                <SelectTrigger className="glass-input">
+                  <SelectValue placeholder={t('checkout.selectPaymentMethod')} />
+                </SelectTrigger>
+                <SelectContent>
+                  {paymentMethods.map((method) => (
+                    <SelectItem key={method.id} value={method.id}>
+                      {method.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>{t('checkout.amount')}</Label>
+              <Input
+                type="number"
+                value={paymentAmount}
+                onChange={(e) => setPaymentAmount(e.target.value)}
+                placeholder="0"
+                className="glass-input"
+              />
+            </div>
+
+            <Button onClick={handleAddPayment} className="w-full glass-button" variant="outline">
+              <Plus className="mr-2 h-4 w-4" />
+              {editingIndex !== null ? t('checkout.updatePayment') : t('checkout.addPayment')}
+            </Button>
+
             {payments.length > 0 && (
-              <div className="space-y-2 mb-4">
-                {payments.map((payment, index) => (
-                  <div key={index} className="flex justify-between items-center glass-card p-3 rounded-xl">
-                    <span className="text-sm">{payment.methodName}</span>
-                    <span className="font-semibold">{formatCurrency(payment.amount)}</span>
-                  </div>
-                ))}
+              <div className="space-y-2 border-t pt-4">
+                {payments.map((payment, index) => {
+                  const method = paymentMethods.find((m) => m.id === payment.methodId);
+                  return (
+                    <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
+                      <span className="text-sm">
+                        {method?.name}: {formatCurrency(payment.amount)}
+                      </span>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditPayment(index)}
+                          className="h-6 w-6"
+                        >
+                          <Edit2 className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleRemovePayment(index)}
+                          className="h-6 w-6"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
 
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="paymentMethod">{t('checkout.paymentMethod')}</Label>
-                <Select value={selectedMethodId} onValueChange={setSelectedMethodId}>
-                  <SelectTrigger id="paymentMethod" className="glass-input rounded-xl">
-                    <SelectValue placeholder={t('checkout.selectPaymentMethod')} />
-                  </SelectTrigger>
-                  <SelectContent className="glass-elevated">
-                    {(paymentMethods || []).map((method: any) => (
-                      <SelectItem key={method.id} value={method.id.toString()}>
-                        {method.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="amount">{t('checkout.amount')}</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  value={currentAmount}
-                  onChange={(e) => setCurrentAmount(e.target.value)}
-                  placeholder="0"
-                  className="glass-input rounded-xl"
-                />
-              </div>
-
-              <Button
-                onClick={handleAddPayment}
-                variant="outline"
-                className="w-full glass-button rounded-xl"
-                disabled={!selectedMethodId || !currentAmount}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                {t('checkout.addPayment')}
-              </Button>
-            </div>
-
-            <div className="space-y-2 pt-4 border-t border-border/30">
+            <div className="space-y-2 border-t pt-4">
               <div className="flex justify-between text-sm">
-                <span>{t('pos.total')}</span>
-                <span className="font-semibold">{formatCurrency(cartTotal)}</span>
+                <span>{t('checkout.remaining')}</span>
+                <span className={remaining > 0 ? 'text-orange-600 font-semibold' : 'text-green-600'}>
+                  {formatCurrency(remaining)}
+                </span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span>{t('checkout.amountReceived')}</span>
-                <span className="font-semibold">{formatCurrency(totalWithPending)}</span>
-              </div>
-              {remaining > 0 && (
-                <div className="flex justify-between text-sm text-destructive">
-                  <span>{t('checkout.remaining')}</span>
-                  <span className="font-semibold">{formatCurrency(remaining)}</span>
-                </div>
-              )}
               {change > 0 && (
-                <div className="flex justify-between text-lg font-bold text-primary pt-2 border-t border-border/30">
+                <div className="flex justify-between text-sm">
                   <span>{t('checkout.change')}</span>
-                  <span>{formatCurrency(change)}</span>
+                  <span className="text-blue-600 font-semibold">{formatCurrency(change)}</span>
                 </div>
               )}
             </div>
 
             <Button
               onClick={handleCompleteTransaction}
-              disabled={!canComplete || isProcessing}
-              className="w-full glass-button rounded-xl"
+              disabled={isProcessing || remaining > 0}
+              className="w-full glass-button"
               size="lg"
             >
               {isProcessing ? t('checkout.processing') : t('checkout.completeTransaction')}
